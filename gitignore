@@ -1,0 +1,12 @@
+.idea/
+*.pyc
+__pycache__/
+*.sqlite3
+*.db
+venv/
+.venv/
+backend/venv/
+backend/.venv/
+*.log
+.pytest_cache/
+.DS_Store

@@ -1,0 +1,39 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is up to date with 'origin/main'.
+#
+# Changes to be committed:
+#	new file:   README-usb.md
+#	modified:   backend/app/main.py
+#	new file:   backend/app/models/__init__.py
+#	modified:   backend/app/models/producto.py
+#	new file:   backend/app/models/stock.py
+#	modified:   backend/app/models/venta.py
+#	modified:   backend/app/routes/productos.py
+#	new file:   backend/app/routes/stock.py
+#	modified:   backend/app/routes/ventas.py
+#	modified:   backend/app/schemas/producto.py
+#	new file:   backend/app/schemas/stock.py
+#	new file:   backend/app/schemas/venta_detalle.py
+#	modified:   frontend/package-lock.json
+#	modified:   frontend/package.json
+#	modified:   frontend/src/App.jsx
+#	new file:   frontend/src/components/Caja.jsx
+#	new file:   frontend/src/components/Clientes.jsx
+#	new file:   frontend/src/components/ProductoForm.jsx
+#	new file:   frontend/src/components/Productos.jsx
+#	new file:   frontend/src/components/Reportes.jsx
+#	new file:   frontend/src/components/Sidebar.jsx
+#	new file:   frontend/src/components/Stock.jsx
+#	new file:   frontend/src/components/Stock_backup.jsx
+#	new file:   frontend/src/components/Ventas.jsx
+#	modified:   frontend/src/index.css
+#	new file:   frontend/src/sidebar.css
+#	new file:   frontend/src/styles/sidebar.css
+#	new file:   frontend/src/styles/stock.css
+#	modified:   frontend/vite.config.js
+#	new file:   run.sh
+#
