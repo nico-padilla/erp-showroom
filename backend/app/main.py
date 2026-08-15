@@ -56,6 +56,7 @@ app.add_middleware(
         "http://127.0.0.1:5174",
         "http://localhost:5175",
         "http://127.0.0.1:5175",
+        "https://erp-showroom-1.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -79,29 +80,8 @@ app.include_router(caja_router)
 # ==========================
 
 @app.get("/")
-def inicio():
+def root():
     return {
-        "mensaje": "ERP Showroom María Paz funcionando"
-    }
-@app.get("/diagnostico")
-def diagnostico():
-    from sqlalchemy import text
-
-    with engine.connect() as conn:
-        base = conn.execute(
-            text("SELECT current_database()")
-        ).scalar()
-
-        esquema = conn.execute(
-            text("SELECT current_schema()")
-        ).scalar()
-
-        productos = conn.execute(
-            text("SELECT COUNT(*) FROM productos")
-        ).scalar()
-
-    return {
-        "base": base,
-        "esquema": esquema,
-        "productos": productos
+        "mensaje": "ERP Showroom María Paz funcionando",
+        "estado": "ok"
     }
