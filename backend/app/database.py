@@ -1,28 +1,99 @@
-from pathlib import Path
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import os
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from app.database import Base, engine
 
-BASE_DIR = Path(__file__).resolve().parent
-DATABASE_URL = f"sqlite:///{BASE_DIR / 'erp_showroom.db'}"
+# ==========================
+# RUTAS
+# ==========================
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
+from app.routes.productos import router as productos_router
+from app.routes.clientes import router as clientes_router
+from app.routes.ventas import router as ventas_router
+from app.routes.stock import router as stock_router
+from app.routes.caja import router as caja_router
+
+
+# ==========================
+# MODELOS
+# ==========================
+
+from app.models import producto
+from app.models import cliente
+from app.models import venta
+from app.models import detalle_venta
+from app.models import stock
+from app.models import caja
+
+
+# ==========================
+# CREAR TABLAS
+# ==========================
+
+Base.metadata.create_all(bind=engine)
+
+
+# ==========================
+# APLICACIÓN
+# ==========================
+
+app = FastAPI(
+    title="ERP Showroom María Paz",
+    version="0.1.0"
 )
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
+
+# ==========================
+# CORS
+# ==========================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:5175",
+        "http://127.0.0.1:5175",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-Base = declarative_base()
+
+# ==========================
+# RUTAS
+# ==========================
+
+app.include_router(productos_router)
+app.include_router(clientes_router)
+app.include_router(ventas_router)
+app.include_router(stock_router)
+app.include_router(caja_router)
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# ==========================
+# INICIO
+# ==========================
+
+@app.get("/")
+def inicio():
+    return {
+        "mensaje": "ERP Showroom María Paz funcionando"
+    }
+
+
+# ==========================
+# DIAGNÓSTICO TEMPORAL
+# ==========================
+
+@app.get("/diagnostico")
+def diagnostico():
+    return {
+        "engine": engine.url.drivername,
+        "database_url_configurada": bool(os.getenv("DATABASE_URL")),
+        "inicio_url": repr(os.getenv("DATABASE_URL", "")[:20])
+    }
