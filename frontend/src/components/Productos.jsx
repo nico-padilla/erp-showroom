@@ -2,11 +2,17 @@ import { useEffect, useState } from "react"
 import ProductoForm from "./ProductoForm"
 import CodigoBarras from "./CodigoBarras"
 
+const API =
+  import.meta.env.VITE_API_URL ||
+  "http://127.0.0.1:8000"
+
 function Productos() {
   const [productos, setProductos] = useState([])
   const [editando, setEditando] = useState(null)
   const [busqueda, setBusqueda] = useState("")
   const [mostrarCodigo, setMostrarCodigo] = useState(null)
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     cargarProductos()
@@ -14,72 +20,111 @@ function Productos() {
 
   async function cargarProductos() {
     try {
-      const respuesta = await fetch("/productos/")
+      setCargando(true)
+      setError("")
+
+      const respuesta = await fetch(`${API}/productos/`)
 
       if (!respuesta.ok) {
-        throw new Error("No se pudieron cargar los productos")
+        throw new Error(
+          `Error del servidor: ${respuesta.status}`
+        )
       }
 
       const data = await respuesta.json()
 
-      setProductos(Array.isArray(data) ? data : [])
+      setProductos(
+        Array.isArray(data) ? data : []
+      )
+
     } catch (error) {
-      console.error("Error cargando productos:", error)
-      alert(error.message)
+      console.error(
+        "Error cargando productos:",
+        error
+      )
+
+      setError(
+        error.message ||
+        "No se pudieron cargar los productos"
+      )
+
+    } finally {
+      setCargando(false)
     }
   }
 
   async function agregarProducto(nuevo) {
     try {
-      const respuesta = await fetch("/productos/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(nuevo)
-      })
+      const respuesta = await fetch(
+        `${API}/productos/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(nuevo)
+        }
+      )
 
       if (!respuesta.ok) {
-        const error = await respuesta.json().catch(() => ({}))
+        const errorData =
+          await respuesta.json().catch(() => ({}))
 
         throw new Error(
-          error.detail || "Error creando producto"
+          errorData.detail ||
+          "Error creando producto"
         )
       }
 
       await respuesta.json()
 
-      cargarProductos()
+      await cargarProductos()
+
     } catch (error) {
-      console.error("Error creando producto:", error)
+      console.error(
+        "Error creando producto:",
+        error
+      )
+
       alert(error.message)
     }
   }
 
   async function eliminarProducto(id) {
-    if (!window.confirm("¿Eliminar este producto?")) {
+    if (
+      !window.confirm(
+        "¿Eliminar este producto?"
+      )
+    ) {
       return
     }
 
     try {
       const respuesta = await fetch(
-        `/productos/${id}`,
+        `${API}/productos/${id}`,
         {
           method: "DELETE"
         }
       )
 
       if (!respuesta.ok) {
-        const error = await respuesta.json().catch(() => ({}))
+        const errorData =
+          await respuesta.json().catch(() => ({}))
 
         throw new Error(
-          error.detail || "No se pudo eliminar"
+          errorData.detail ||
+          "No se pudo eliminar"
         )
       }
 
-      cargarProductos()
+      await cargarProductos()
+
     } catch (error) {
-      console.error("Error eliminando producto:", error)
+      console.error(
+        "Error eliminando producto:",
+        error
+      )
+
       alert(error.message)
     }
   }
@@ -91,7 +136,7 @@ function Productos() {
 
     try {
       const respuesta = await fetch(
-        `/productos/${editando.id}`,
+        `${API}/productos/${editando.id}`,
         {
           method: "PUT",
           headers: {
@@ -102,10 +147,12 @@ function Productos() {
       )
 
       if (!respuesta.ok) {
-        const error = await respuesta.json().catch(() => ({}))
+        const errorData =
+          await respuesta.json().catch(() => ({}))
 
         throw new Error(
-          error.detail || "Error actualizando producto"
+          errorData.detail ||
+          "No se pudo actualizar el producto"
         )
       }
 
@@ -113,563 +160,358 @@ function Productos() {
 
       setEditando(null)
 
-      cargarProductos()
+      await cargarProductos()
+
     } catch (error) {
-      console.error("Error editando producto:", error)
+      console.error(
+        "Error actualizando producto:",
+        error
+      )
+
       alert(error.message)
     }
   }
 
-  function actualizarCampo(campo, valor) {
-    setEditando({
-      ...editando,
-      [campo]: valor
+  const productosFiltrados =
+    productos.filter((producto) => {
+      const texto =
+        busqueda.toLowerCase()
+
+      return (
+        String(producto.codigo || "")
+          .toLowerCase()
+          .includes(texto) ||
+
+        String(producto.codigo_barras || "")
+          .toLowerCase()
+          .includes(texto) ||
+
+        String(producto.nombre || "")
+          .toLowerCase()
+          .includes(texto) ||
+
+        String(producto.categoria || "")
+          .toLowerCase()
+          .includes(texto) ||
+
+        String(producto.marca || "")
+          .toLowerCase()
+          .includes(texto)
+      )
     })
-  }
-
-  const productosFiltrados = productos.filter((producto) => {
-    const texto = String(busqueda || "")
-      .toLowerCase()
-      .trim()
-
-    if (!texto) {
-      return true
-    }
-
-    return (
-      String(producto.nombre || "")
-        .toLowerCase()
-        .includes(texto) ||
-      String(producto.codigo || "")
-        .toLowerCase()
-        .includes(texto) ||
-      String(producto.codigo_barras || "")
-        .toLowerCase()
-        .includes(texto)
-    )
-  })
 
   return (
-    <div>
+    <div className="p-6">
 
-      <h1>📦 Productos</h1>
+      <div className="flex justify-between items-center mb-6">
 
-      <ProductoForm
-        agregarProducto={agregarProducto}
-      />
+        <div>
+          <h1 className="text-3xl font-bold">
+            Productos
+          </h1>
 
-      <div
-        style={{
-          marginBottom: "20px"
-        }}
-      >
-        <input
-          type="text"
-          placeholder="🔎 Buscar por código, código de barras o nombre..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "600px",
-            padding: "12px",
-            fontSize: "16px",
-            border: "1px solid #ccc",
-            borderRadius: "8px"
-          }}
-        />
+          <p className="text-gray-500">
+            Gestión de productos e inventario
+          </p>
+        </div>
+
+        <button
+          onClick={cargarProductos}
+          className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
+        >
+          🔄 Actualizar
+        </button>
+
       </div>
 
-      <h2>
-        Listado de productos
-      </h2>
+      <ProductoForm
+        onGuardar={agregarProducto}
+      />
 
-      <table
-        border="1"
-        cellPadding="10"
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          background: "#fff"
-        }}
-      >
+      <div className="bg-white rounded-lg shadow p-5 mt-6">
 
-        <thead>
+        <div className="mb-4">
 
-          <tr>
-            <th>Código</th>
-            <th>Código de barras</th>
-            <th>Producto</th>
-            <th>Talle</th>
-            <th>Color</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Acciones</th>
-          </tr>
+          <input
+            type="text"
+            placeholder="Buscar por código, nombre, categoría o marca..."
+            value={busqueda}
+            onChange={(e) =>
+              setBusqueda(e.target.value)
+            }
+            className="w-full border rounded-lg px-4 py-3"
+          />
 
-        </thead>
+        </div>
 
-        <tbody>
+        {cargando && (
+          <div className="text-center py-6">
+            Cargando productos...
+          </div>
+        )}
 
-          {productosFiltrados.map((producto) => (
+        {error && (
+          <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
+            ❌ {error}
 
-            <tr key={producto.id}>
+            <div className="text-sm mt-2">
+              API: {API}
+            </div>
+          </div>
+        )}
 
-              <td>
-                {producto.codigo}
-              </td>
+        {!cargando &&
+          !error &&
+          productosFiltrados.length === 0 && (
+            <div className="text-center text-gray-500 py-8">
+              No hay productos para mostrar.
+            </div>
+          )}
 
-              <td>
-                {producto.codigo_barras || "-"}
-              </td>
+        {!cargando &&
+          productosFiltrados.length > 0 && (
 
-              <td>
-                {producto.nombre}
-              </td>
+          <div className="overflow-x-auto">
 
-              <td>
-                {producto.talle}
-              </td>
+            <table className="w-full">
 
-              <td>
-                {producto.color}
-              </td>
+              <thead>
 
-              <td>
-                $
-                {Number(
-                  producto.precio_venta || 0
-                ).toLocaleString("es-AR")}
-              </td>
+                <tr className="border-b">
 
-              <td>
-                {producto.stock}
-              </td>
+                  <th className="text-left p-3">
+                    Código
+                  </th>
 
-              <td>
+                  <th className="text-left p-3">
+                    Producto
+                  </th>
 
-                <button
-                  onClick={() =>
-                    setMostrarCodigo(
-                      mostrarCodigo === producto.id
-                        ? null
-                        : producto.id
-                    )
-                  }
-                  style={{
-                    marginRight: "8px",
-                    cursor: "pointer"
-                  }}
-                >
-                  🏷️ Código
-                </button>
+                  <th className="text-left p-3">
+                    Categoría
+                  </th>
 
-                <button
-                  onClick={() =>
-                    setEditando({
-                      ...producto
-                    })
-                  }
-                  style={{
-                    marginRight: "8px",
-                    cursor: "pointer"
-                  }}
-                >
-                  ✏️ Editar
-                </button>
+                  <th className="text-left p-3">
+                    Talle
+                  </th>
 
-                <button
-                  onClick={() =>
-                    eliminarProducto(producto.id)
-                  }
-                  style={{
-                    cursor: "pointer"
-                  }}
-                >
-                  🗑️ Eliminar
-                </button>
+                  <th className="text-left p-3">
+                    Color
+                  </th>
 
-                {mostrarCodigo === producto.id && (
+                  <th className="text-right p-3">
+                    Precio
+                  </th>
 
-                  <div
-                    style={{
-                      marginTop: "15px",
-                      padding: "10px",
-                      background: "#fff",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px"
-                    }}
-                  >
+                  <th className="text-right p-3">
+                    Stock
+                  </th>
 
-                    {producto.codigo_barras ? (
+                  <th className="text-center p-3">
+                    Acciones
+                  </th>
 
-                      <CodigoBarras
-                        codigo={
-                          producto.codigo_barras
-                        }
-                      />
+                </tr>
 
-                    ) : (
+              </thead>
 
-                      <p>
-                        Este producto no tiene
-                        código de barras.
-                      </p>
+              <tbody>
 
-                    )}
+                {productosFiltrados.map(
+                  (producto) => (
 
-                  </div>
+                    <tr
+                      key={producto.id}
+                      className="border-b hover:bg-gray-50"
+                    >
 
+                      <td className="p-3">
+                        {producto.codigo}
+                      </td>
+
+                      <td className="p-3 font-medium">
+                        {producto.nombre}
+                      </td>
+
+                      <td className="p-3">
+                        {producto.categoria}
+                      </td>
+
+                      <td className="p-3">
+                        {producto.talle}
+                      </td>
+
+                      <td className="p-3">
+                        {producto.color}
+                      </td>
+
+                      <td className="p-3 text-right">
+                        $
+                        {Number(
+                          producto.precio_venta || 0
+                        ).toLocaleString(
+                          "es-AR"
+                        )}
+                      </td>
+
+                      <td className="p-3 text-right">
+                        <span
+                          className={
+                            Number(producto.stock) <=
+                            Number(producto.stock_minimo)
+                              ? "text-red-600 font-bold"
+                              : "text-green-600"
+                          }
+                        >
+                          {producto.stock}
+                        </span>
+                      </td>
+
+                      <td className="p-3">
+
+                        <div className="flex gap-2 justify-center">
+
+                          <button
+                            onClick={() =>
+                              setMostrarCodigo(
+                                producto
+                              )
+                            }
+                            className="bg-blue-600 text-white px-3 py-1 rounded"
+                          >
+                            📊
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              setEditando({
+                                ...producto
+                              })
+                            }
+                            className="bg-yellow-500 text-white px-3 py-1 rounded"
+                          >
+                            ✏️
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              eliminarProducto(
+                                producto.id
+                              )
+                            }
+                            className="bg-red-600 text-white px-3 py-1 rounded"
+                          >
+                            🗑️
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+
+                  )
                 )}
 
-              </td>
+              </tbody>
 
-            </tr>
+            </table>
 
-          ))}
+          </div>
+        )}
 
-        </tbody>
+      </div>
 
-      </table>
-
-      {productosFiltrados.length === 0 && (
-
-        <p
-          style={{
-            marginTop: "20px"
-          }}
-        >
-          No se encontraron productos.
-        </p>
-
+      {mostrarCodigo && (
+        <CodigoBarras
+          producto={mostrarCodigo}
+          onCerrar={() =>
+            setMostrarCodigo(null)
+          }
+        />
       )}
 
       {editando && (
 
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000
-          }}
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
 
-          <div
-            style={{
-              background: "#fff",
-              padding: "30px",
-              borderRadius: "12px",
-              width: "600px",
-              maxWidth: "90%",
-              maxHeight: "90vh",
-              overflowY: "auto"
-            }}
-          >
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
 
-            <h2>
-              ✏️ Editar producto
+            <h2 className="text-2xl font-bold mb-4">
+              Editar producto
             </h2>
 
-            <label>
-              Código
-            </label>
+            <div className="grid grid-cols-2 gap-4">
 
-            <input
-              value={editando.codigo || ""}
-              onChange={(e) =>
-                actualizarCampo(
-                  "codigo",
-                  e.target.value
+              {[
+                ["codigo", "Código"],
+                ["codigo_barras", "Código de barras"],
+                ["nombre", "Nombre"],
+                ["descripcion", "Descripción"],
+                ["categoria", "Categoría"],
+                ["marca", "Marca"],
+                ["talle", "Talle"],
+                ["color", "Color"],
+                ["precio_compra", "Precio compra"],
+                ["precio_venta", "Precio venta"],
+                ["stock", "Stock"],
+                ["stock_minimo", "Stock mínimo"]
+              ].map(
+                ([campo, etiqueta]) => (
+
+                  <div key={campo}>
+
+                    <label className="block text-sm font-medium mb-1">
+                      {etiqueta}
+                    </label>
+
+                    <input
+                      type={
+                        [
+                          "precio_compra",
+                          "precio_venta",
+                          "stock",
+                          "stock_minimo"
+                        ].includes(campo)
+                          ? "number"
+                          : "text"
+                      }
+                      value={
+                        editando[campo] ?? ""
+                      }
+                      onChange={(e) =>
+                        setEditando({
+                          ...editando,
+                          [campo]:
+                            e.target.value
+                        })
+                      }
+                      className="w-full border rounded px-3 py-2"
+                    />
+
+                  </div>
+
                 )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
+              )}
 
-            <label>
-              Código de barras
-            </label>
+            </div>
 
-            <input
-              value={
-                editando.codigo_barras || ""
-              }
-              onChange={(e) =>
-                actualizarCampo(
-                  "codigo_barras",
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Nombre
-            </label>
-
-            <input
-              value={editando.nombre || ""}
-              onChange={(e) =>
-                actualizarCampo(
-                  "nombre",
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Descripción
-            </label>
-
-            <input
-              value={
-                editando.descripcion || ""
-              }
-              onChange={(e) =>
-                actualizarCampo(
-                  "descripcion",
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Categoría
-            </label>
-
-            <input
-              value={
-                editando.categoria || ""
-              }
-              onChange={(e) =>
-                actualizarCampo(
-                  "categoria",
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Marca
-            </label>
-
-            <input
-              value={editando.marca || ""}
-              onChange={(e) =>
-                actualizarCampo(
-                  "marca",
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Talle
-            </label>
-
-            <input
-              value={editando.talle || ""}
-              onChange={(e) =>
-                actualizarCampo(
-                  "talle",
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Color
-            </label>
-
-            <input
-              value={editando.color || ""}
-              onChange={(e) =>
-                actualizarCampo(
-                  "color",
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Precio de compra
-            </label>
-
-            <input
-              type="number"
-              value={
-                editando.precio_compra ?? ""
-              }
-              onChange={(e) =>
-                actualizarCampo(
-                  "precio_compra",
-                  Number(e.target.value)
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Precio de venta
-            </label>
-
-            <input
-              type="number"
-              value={
-                editando.precio_venta ?? ""
-              }
-              onChange={(e) =>
-                actualizarCampo(
-                  "precio_venta",
-                  Number(e.target.value)
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Stock
-            </label>
-
-            <input
-              type="number"
-              value={
-                editando.stock ?? ""
-              }
-              onChange={(e) =>
-                actualizarCampo(
-                  "stock",
-                  Number(e.target.value)
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Stock mínimo
-            </label>
-
-            <input
-              type="number"
-              value={
-                editando.stock_minimo ?? ""
-              }
-              onChange={(e) =>
-                actualizarCampo(
-                  "stock_minimo",
-                  Number(e.target.value)
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <label>
-              Imagen
-            </label>
-
-            <input
-              value={
-                editando.imagen || ""
-              }
-              onChange={(e) =>
-                actualizarCampo(
-                  "imagen",
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px"
-              }}
-            />
-
-            <div
-              style={{
-                marginTop: "20px"
-              }}
-            >
-
-              <button
-                onClick={guardarEdicion}
-                style={{
-                  padding: "12px 20px",
-                  marginRight: "10px",
-                  cursor: "pointer"
-                }}
-              >
-                💾 Guardar cambios
-              </button>
+            <div className="flex justify-end gap-3 mt-6">
 
               <button
                 onClick={() =>
                   setEditando(null)
                 }
-                style={{
-                  padding: "12px 20px",
-                  cursor: "pointer"
-                }}
+                className="px-4 py-2 border rounded"
               >
-                ❌ Cancelar
+                Cancelar
+              </button>
+
+              <button
+                onClick={guardarEdicion}
+                className="bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Guardar cambios
               </button>
 
             </div>
