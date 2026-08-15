@@ -8,24 +8,27 @@ class ProductoBase(BaseModel):
     nombre: str
     descripcion: str | None = None
 
-    categoria: str
+    categoria: str | None = None
     marca: str | None = None
 
-    talle: str
-    color: str
+    talle: str | None = None
+    color: str | None = None
 
-    precio_compra: float
-    precio_venta: float
+    precio_compra: float = 0
+    precio_venta: float = 0
 
     stock: int = 0
-    stock_minimo: int = 1
+    stock_minimo: int = 2
 
     imagen: str | None = None
-
     activo: bool = True
 
 
 class ProductoCreate(ProductoBase):
+    pass
+
+
+class ProductoUpdate(ProductoBase):
     pass
 
 

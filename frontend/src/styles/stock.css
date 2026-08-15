@@ -1,0 +1,29 @@
+.stock-container {
+  padding: 20px;
+}
+
+.stock-container h1 {
+  margin-bottom: 20px;
+}
+
+.stock-container table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  margin-bottom: 30px;
+}
+
+.stock-container th,
+.stock-container td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.stock-container th {
+  background: #f5f0eb;
+}
+
+.stock-container h2 {
+  margin-top: 30px;
+}

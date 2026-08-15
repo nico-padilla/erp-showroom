@@ -10,3 +10,10 @@ backend/.venv/
 *.log
 .pytest_cache/
 .DS_Store
+
+venv/
+backend/venv-nuevo/
+frontend/src/components/*.backup
+frontend/src/components/*.backup2
+frontend/src/components/*.backup3
+frontend/src/components/*.save

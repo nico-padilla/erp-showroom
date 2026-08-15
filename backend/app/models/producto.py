@@ -7,23 +7,23 @@ class Producto(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    codigo = Column(String, unique=True, index=True)
+    codigo = Column(String, unique=True, index=True, nullable=False)
     codigo_barras = Column(String, unique=True, nullable=True)
 
-    nombre = Column(String)
+    nombre = Column(String, nullable=False)
     descripcion = Column(String, nullable=True)
 
-    categoria = Column(String)
+    categoria = Column(String, nullable=True)
     marca = Column(String, nullable=True)
 
-    talle = Column(String)
-    color = Column(String)
+    talle = Column(String, nullable=True)
+    color = Column(String, nullable=True)
 
-    precio_compra = Column(Float)
-    precio_venta = Column(Float)
+    precio_compra = Column(Float, default=0)
+    precio_venta = Column(Float, default=0)
 
     stock = Column(Integer, default=0)
-    stock_minimo = Column(Integer, default=1)
+    stock_minimo = Column(Integer, default=2)
 
     imagen = Column(String, nullable=True)
 

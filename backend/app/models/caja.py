@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, Float, String, DateTime
 from datetime import datetime, timezone
+
 from app.database import Base
 
 
@@ -7,16 +8,14 @@ def fecha_actual_utc():
     return datetime.now(timezone.utc)
 
 
-class Venta(Base):
-    __tablename__ = "ventas"
+class MovimientoCaja(Base):
+    __tablename__ = "movimientos_caja"
 
     id = Column(Integer, primary_key=True, index=True)
 
-    cliente_id = Column(Integer)
+    tipo = Column(String)  # ingreso / gasto
+    concepto = Column(String)
 
-    total = Column(Float)
-
-    metodo_pago = Column(String)
+    monto = Column(Float)
 
     fecha = Column(DateTime, default=fecha_actual_utc)
-
