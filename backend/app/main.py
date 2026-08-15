@@ -83,3 +83,25 @@ def inicio():
     return {
         "mensaje": "ERP Showroom María Paz funcionando"
     }
+@app.get("/diagnostico")
+def diagnostico():
+    from sqlalchemy import text
+
+    with engine.connect() as conn:
+        base = conn.execute(
+            text("SELECT current_database()")
+        ).scalar()
+
+        esquema = conn.execute(
+            text("SELECT current_schema()")
+        ).scalar()
+
+        productos = conn.execute(
+            text("SELECT COUNT(*) FROM productos")
+        ).scalar()
+
+    return {
+        "base": base,
+        "esquema": esquema,
+        "productos": productos
+    }
