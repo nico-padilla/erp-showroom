@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react"
 
+const API =
+  import.meta.env.VITE_API_URL ||
+  "https://erp-showroom.onrender.com"
+
 export default function Caja() {
   const [movimientos, setMovimientos] = useState([])
   const [tipo, setTipo] = useState("ingreso")
@@ -13,14 +17,14 @@ export default function Caja() {
 
   async function cargarMovimientos() {
     try {
-      const respuesta = await fetch("/caja/")
+      const respuesta = await fetch(`${API}/caja/`)
 
       if (!respuesta.ok) {
         throw new Error("No se pudieron cargar los movimientos")
       }
 
       const data = await respuesta.json()
-      setMovimientos(data)
+      setMovimientos(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error("Error cargando caja:", error)
     }
@@ -42,7 +46,7 @@ export default function Caja() {
     setCargando(true)
 
     try {
-      const respuesta = await fetch("/caja/", {
+      const respuesta = await fetch(`${API}/caja/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +66,9 @@ export default function Caja() {
         try {
           data = JSON.parse(texto)
         } catch {
-          throw new Error("El servidor respondió con un formato inválido")
+          throw new Error(
+            "El servidor respondió con un formato inválido"
+          )
         }
       }
 
@@ -83,7 +89,11 @@ export default function Caja() {
           : "Gasto registrado correctamente ✅"
       )
     } catch (error) {
-      console.error("Error registrando movimiento:", error)
+      console.error(
+        "Error registrando movimiento:",
+        error
+      )
+
       alert(error.message)
     } finally {
       setCargando(false)
@@ -92,57 +102,99 @@ export default function Caja() {
 
   const ingresos = movimientos
     .filter((m) => m.tipo === "ingreso")
-    .reduce((total, m) => total + Number(m.monto), 0)
+    .reduce(
+      (total, m) => total + Number(m.monto || 0),
+      0
+    )
 
   const gastos = movimientos
     .filter((m) => m.tipo === "gasto")
-    .reduce((total, m) => total + Number(m.monto), 0)
+    .reduce(
+      (total, m) => total + Number(m.monto || 0),
+      0
+    )
 
   const saldo = ingresos - gastos
 
-  // RESUMEN POR MEDIO DE PAGO
   const efectivo = movimientos
     .filter(
       (m) =>
         m.tipo === "ingreso" &&
-        m.concepto.toLowerCase().includes("efectivo")
+        String(m.concepto || "")
+          .toLowerCase()
+          .includes("efectivo")
     )
-    .reduce((total, m) => total + Number(m.monto), 0)
+    .reduce(
+      (total, m) => total + Number(m.monto || 0),
+      0
+    )
 
   const debito = movimientos
     .filter(
       (m) =>
         m.tipo === "ingreso" &&
-        (m.concepto.toLowerCase().includes("débito") ||
-          m.concepto.toLowerCase().includes("debito"))
+        (
+          String(m.concepto || "")
+            .toLowerCase()
+            .includes("débito") ||
+          String(m.concepto || "")
+            .toLowerCase()
+            .includes("debito")
+        )
     )
-    .reduce((total, m) => total + Number(m.monto), 0)
+    .reduce(
+      (total, m) => total + Number(m.monto || 0),
+      0
+    )
 
   const credito = movimientos
     .filter(
       (m) =>
         m.tipo === "ingreso" &&
-        (m.concepto.toLowerCase().includes("crédito") ||
-          m.concepto.toLowerCase().includes("credito"))
+        (
+          String(m.concepto || "")
+            .toLowerCase()
+            .includes("crédito") ||
+          String(m.concepto || "")
+            .toLowerCase()
+            .includes("credito")
+        )
     )
-    .reduce((total, m) => total + Number(m.monto), 0)
+    .reduce(
+      (total, m) => total + Number(m.monto || 0),
+      0
+    )
 
   const transferencia = movimientos
     .filter(
       (m) =>
         m.tipo === "ingreso" &&
-        m.concepto.toLowerCase().includes("transferencia")
+        String(m.concepto || "")
+          .toLowerCase()
+          .includes("transferencia")
     )
-    .reduce((total, m) => total + Number(m.monto), 0)
+    .reduce(
+      (total, m) => total + Number(m.monto || 0),
+      0
+    )
 
   const mercadoPago = movimientos
     .filter(
       (m) =>
         m.tipo === "ingreso" &&
-        (m.concepto.toLowerCase().includes("mercado pago") ||
-          m.concepto.toLowerCase().includes("mercadopago"))
+        (
+          String(m.concepto || "")
+            .toLowerCase()
+            .includes("mercado pago") ||
+          String(m.concepto || "")
+            .toLowerCase()
+            .includes("mercadopago")
+        )
     )
-    .reduce((total, m) => total + Number(m.monto), 0)
+    .reduce(
+      (total, m) => total + Number(m.monto || 0),
+      0
+    )
 
   function formatearDinero(valor) {
     return new Intl.NumberFormat("es-AR", {
@@ -154,7 +206,6 @@ export default function Caja() {
 
   function formatearFecha(fecha) {
     if (!fecha) return "-"
-
     return new Date(fecha).toLocaleString("es-AR")
   }
 
@@ -165,8 +216,6 @@ export default function Caja() {
       <p style={{ color: "#666", marginBottom: "25px" }}>
         Control de ingresos, gastos y saldo del showroom.
       </p>
-
-      {/* RESUMEN PRINCIPAL */}
 
       <div
         style={{
@@ -235,8 +284,6 @@ export default function Caja() {
         </div>
       </div>
 
-      {/* RESUMEN POR MEDIO DE PAGO */}
-
       <div
         style={{
           background: "#fff",
@@ -257,69 +304,27 @@ export default function Caja() {
             marginTop: "20px",
           }}
         >
-          <div
-            style={{
-              padding: "18px",
-              borderRadius: "10px",
-              background: "#f8f9fa",
-            }}
-          >
-            <strong>💵 Efectivo</strong>
-
-            <h3>{formatearDinero(efectivo)}</h3>
-          </div>
-
-          <div
-            style={{
-              padding: "18px",
-              borderRadius: "10px",
-              background: "#f8f9fa",
-            }}
-          >
-            <strong>💳 Débito</strong>
-
-            <h3>{formatearDinero(debito)}</h3>
-          </div>
-
-          <div
-            style={{
-              padding: "18px",
-              borderRadius: "10px",
-              background: "#f8f9fa",
-            }}
-          >
-            <strong>💳 Crédito</strong>
-
-            <h3>{formatearDinero(credito)}</h3>
-          </div>
-
-          <div
-            style={{
-              padding: "18px",
-              borderRadius: "10px",
-              background: "#f8f9fa",
-            }}
-          >
-            <strong>📱 Transferencia</strong>
-
-            <h3>{formatearDinero(transferencia)}</h3>
-          </div>
-
-          <div
-            style={{
-              padding: "18px",
-              borderRadius: "10px",
-              background: "#f8f9fa",
-            }}
-          >
-            <strong>🟡 Mercado Pago</strong>
-
-            <h3>{formatearDinero(mercadoPago)}</h3>
-          </div>
+          {[
+            ["💵 Efectivo", efectivo],
+            ["💳 Débito", debito],
+            ["💳 Crédito", credito],
+            ["📱 Transferencia", transferencia],
+            ["🟡 Mercado Pago", mercadoPago],
+          ].map(([nombre, valor]) => (
+            <div
+              key={nombre}
+              style={{
+                padding: "18px",
+                borderRadius: "10px",
+                background: "#f8f9fa",
+              }}
+            >
+              <strong>{nombre}</strong>
+              <h3>{formatearDinero(valor)}</h3>
+            </div>
+          ))}
         </div>
       </div>
-
-      {/* FORMULARIO */}
 
       <div
         style={{
@@ -458,8 +463,6 @@ export default function Caja() {
         </form>
       </div>
 
-      {/* MOVIMIENTOS */}
-
       <div
         style={{
           background: "#fff",
@@ -485,107 +488,53 @@ export default function Caja() {
             >
               <thead>
                 <tr>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "12px",
-                      borderBottom:
-                        "2px solid #ddd",
-                    }}
-                  >
+                  <th style={{ textAlign: "left", padding: "12px", borderBottom: "2px solid #ddd" }}>
                     Fecha
                   </th>
 
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "12px",
-                      borderBottom:
-                        "2px solid #ddd",
-                    }}
-                  >
+                  <th style={{ textAlign: "left", padding: "12px", borderBottom: "2px solid #ddd" }}>
                     Tipo
                   </th>
 
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "12px",
-                      borderBottom:
-                        "2px solid #ddd",
-                    }}
-                  >
+                  <th style={{ textAlign: "left", padding: "12px", borderBottom: "2px solid #ddd" }}>
                     Concepto
                   </th>
 
-                  <th
-                    style={{
-                      textAlign: "right",
-                      padding: "12px",
-                      borderBottom:
-                        "2px solid #ddd",
-                    }}
-                  >
+                  <th style={{ textAlign: "right", padding: "12px", borderBottom: "2px solid #ddd" }}>
                     Monto
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {movimientos.map(
-                  (movimiento) => (
-                    <tr key={movimiento.id}>
-                      <td
-                        style={{
-                          padding: "12px",
-                          borderBottom:
-                            "1px solid #eee",
-                        }}
-                      >
-                        {formatearFecha(
-                          movimiento.fecha
-                        )}
-                      </td>
+                {movimientos.map((movimiento) => (
+                  <tr key={movimiento.id}>
+                    <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>
+                      {formatearFecha(movimiento.fecha)}
+                    </td>
 
-                      <td
-                        style={{
-                          padding: "12px",
-                          borderBottom:
-                            "1px solid #eee",
-                        }}
-                      >
-                        {movimiento.tipo ===
-                        "ingreso"
-                          ? "💵 Ingreso"
-                          : "💸 Gasto"}
-                      </td>
+                    <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>
+                      {movimiento.tipo === "ingreso"
+                        ? "💵 Ingreso"
+                        : "💸 Gasto"}
+                    </td>
 
-                      <td
-                        style={{
-                          padding: "12px",
-                          borderBottom:
-                            "1px solid #eee",
-                        }}
-                      >
-                        {movimiento.concepto}
-                      </td>
+                    <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>
+                      {movimiento.concepto}
+                    </td>
 
-                      <td
-                        style={{
-                          padding: "12px",
-                          borderBottom:
-                            "1px solid #eee",
-                          textAlign: "right",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {formatearDinero(
-                          movimiento.monto
-                        )}
-                      </td>
-                    </tr>
-                  )
-                )}
+                    <td
+                      style={{
+                        padding: "12px",
+                        borderBottom: "1px solid #eee",
+                        textAlign: "right",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {formatearDinero(movimiento.monto)}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
