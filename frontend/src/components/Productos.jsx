@@ -4,7 +4,7 @@ import CodigoBarras from "./CodigoBarras"
 
 const API =
   import.meta.env.VITE_API_URL ||
-  "http://127.0.0.1:8000"
+  "https://erp-showroom.onrender.com"
 
 function Productos() {
   const [productos, setProductos] = useState([])
@@ -355,6 +355,7 @@ function Productos() {
                       </td>
 
                       <td className="p-3 text-right">
+
                         <span
                           className={
                             Number(producto.stock) <=
@@ -365,6 +366,7 @@ function Productos() {
                         >
                           {producto.stock}
                         </span>
+
                       </td>
 
                       <td className="p-3">
