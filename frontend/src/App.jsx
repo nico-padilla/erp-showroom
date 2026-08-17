@@ -1,3 +1,4 @@
+import { API } from "./config"
 import { useEffect, useState } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
@@ -9,9 +10,7 @@ import Stock from "./components/Stock"
 import Caja from "./components/Caja"
 import Reportes from "./components/Reportes"
 
-const API =
-  import.meta.env.VITE_API_URL ||
-  "https://erp-showroom.onrender.com"
+
 
 function Dashboard() {
   const [productos, setProductos] = useState([])

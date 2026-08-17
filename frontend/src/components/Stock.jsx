@@ -1,6 +1,7 @@
+import { API } from "../config"
 import { useEffect, useState } from "react"
 
-const API = import.meta.env.VITE_API_URL
+
 
 export default function Stock() {
   const [productos, setProductos] = useState([])

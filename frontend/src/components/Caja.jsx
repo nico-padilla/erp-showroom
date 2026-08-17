@@ -1,8 +1,7 @@
+import { API } from "../config"
 import { useEffect, useState } from "react"
 
-const API =
-  import.meta.env.VITE_API_URL ||
-  "https://erp-showroom.onrender.com"
+
 
 export default function Caja() {
   const [movimientos, setMovimientos] = useState([])

@@ -1,10 +1,9 @@
+import { API } from "../config"
 import { useEffect, useState } from "react"
 import ProductoForm from "./ProductoForm"
 import CodigoBarras from "./CodigoBarras"
 
-const API =
-  import.meta.env.VITE_API_URL ||
-  "https://erp-showroom.onrender.com"
+
 
 function Productos() {
   const [productos, setProductos] = useState([])
