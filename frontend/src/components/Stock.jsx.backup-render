@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-const API = import.meta.env.VITE_API_URL
+const API = "http://127.0.0.1:8000"
 
 export default function Stock() {
   const [productos, setProductos] = useState([])
@@ -285,22 +285,12 @@ export default function Stock() {
               placeholder="Buscar por nombre, código o código de barras..."
               value={busqueda}
               onChange={(e) => {
-                setBusqueda(e.target.value)
-                setProductoSeleccionado(null)
-              }}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter" || !busqueda.trim()) return
-
-                const texto = busqueda.trim().toLowerCase()
-                const productoEscaneado = productos.find(
-                  (producto) =>
-                    String(producto.codigo || "").toLowerCase() === texto ||
-                    String(producto.codigo_barras || "").toLowerCase() === texto
+                setBusqueda(
+                  e.target.value
                 )
-
-                if (productoEscaneado) {
-                  seleccionarProducto(productoEscaneado)
-                }
+                setProductoSeleccionado(
+                  null
+                )
               }}
               style={{
                 width: "100%",

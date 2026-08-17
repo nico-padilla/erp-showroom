@@ -53,37 +53,123 @@ export default function Sidebar() {
 
       <nav
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
+          display: "grid",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          gap: "10px",
           marginTop: "20px",
         }}
       >
-        <NavLink to="/" end>
+        <NavLink
+          to="/"
+          end
+          style={({ isActive }) => ({
+            textDecoration: "none",
+            color: isActive ? "#fff" : "#333",
+            background: isActive ? "#111827" : "#f3f4f6",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            fontWeight: 600,
+            textAlign: "center",
+            transition: "all 0.2s ease",
+          })}
+        >
           🏠 Dashboard
         </NavLink>
 
-        <NavLink to="/productos">
+        <NavLink
+          to="/productos"
+          style={({ isActive }) => ({
+            textDecoration: "none",
+            color: isActive ? "#fff" : "#333",
+            background: isActive ? "#111827" : "#f3f4f6",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            fontWeight: 600,
+            textAlign: "center",
+            transition: "all 0.2s ease",
+          })}
+        >
           👗 Productos
         </NavLink>
 
-        <NavLink to="/stock">
+        <NavLink
+          to="/stock"
+          style={({ isActive }) => ({
+            textDecoration: "none",
+            color: isActive ? "#fff" : "#333",
+            background: isActive ? "#111827" : "#f3f4f6",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            fontWeight: 600,
+            textAlign: "center",
+            transition: "all 0.2s ease",
+          })}
+        >
           📦 Stock
         </NavLink>
 
-        <NavLink to="/ventas">
+        <NavLink
+          to="/ventas"
+          style={({ isActive }) => ({
+            textDecoration: "none",
+            color: isActive ? "#fff" : "#333",
+            background: isActive ? "#111827" : "#f3f4f6",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            fontWeight: 600,
+            textAlign: "center",
+            transition: "all 0.2s ease",
+          })}
+        >
           🛒 Ventas
         </NavLink>
 
-        <NavLink to="/clientes">
+        <NavLink
+          to="/clientes"
+          style={({ isActive }) => ({
+            textDecoration: "none",
+            color: isActive ? "#fff" : "#333",
+            background: isActive ? "#111827" : "#f3f4f6",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            fontWeight: 600,
+            textAlign: "center",
+            transition: "all 0.2s ease",
+          })}
+        >
           👥 Clientes
         </NavLink>
 
-        <NavLink to="/caja">
+        <NavLink
+          to="/caja"
+          style={({ isActive }) => ({
+            textDecoration: "none",
+            color: isActive ? "#fff" : "#333",
+            background: isActive ? "#111827" : "#f3f4f6",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            fontWeight: 600,
+            textAlign: "center",
+            transition: "all 0.2s ease",
+          })}
+        >
           💰 Caja
         </NavLink>
 
-        <NavLink to="/reportes">
+        <NavLink
+          to="/reportes"
+          style={({ isActive }) => ({
+            textDecoration: "none",
+            color: isActive ? "#fff" : "#333",
+            background: isActive ? "#111827" : "#f3f4f6",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            fontWeight: 600,
+            textAlign: "center",
+            transition: "all 0.2s ease",
+            gridColumn: "1 / -1",
+          })}
+        >
           📊 Reportes
         </NavLink>
       </nav>
