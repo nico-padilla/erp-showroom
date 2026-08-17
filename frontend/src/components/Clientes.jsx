@@ -285,27 +285,58 @@ export default function Clientes() {
 
       <div
         style={{
-          background: "#fff",
-          padding: "20px",
-          borderRadius: "12px",
+          display: "grid",
+          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+          gap: "16px",
           marginBottom: "25px",
-          boxShadow:
-            "0 2px 8px rgba(0,0,0,0.08)"
         }}
       >
+        <div style={{ background: "#fff", padding: "18px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+          <div style={{ color: "#666" }}>Total clientes</div>
+          <h2 style={{ margin: "8px 0 0" }}>{clientes.length}</h2>
+        </div>
 
-        <h2>➕ Nuevo cliente</h2>
+        <div style={{ background: "#fff", padding: "18px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+          <div style={{ color: "#666" }}>Con WhatsApp</div>
+          <h2 style={{ margin: "8px 0 0" }}>{clientes.filter((cliente) => cliente.telefono).length}</h2>
+        </div>
 
-        <form
-          onSubmit={guardarCliente}
+        <div style={{ background: "#fff", padding: "18px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+          <div style={{ color: "#666" }}>Con Instagram</div>
+          <h2 style={{ margin: "8px 0 0" }}>{clientes.filter((cliente) => cliente.instagram).length}</h2>
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1.3fr",
+          gap: "20px",
+          marginBottom: "25px",
+        }}
+      >
+        <div
           style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(2, 1fr)",
-            gap: "12px",
-            maxWidth: "800px"
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow:
+              "0 2px 8px rgba(0,0,0,0.08)"
           }}
         >
+
+          <h2>➕ Nuevo cliente</h2>
+
+          <form
+            onSubmit={guardarCliente}
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(2, 1fr)",
+              gap: "12px",
+              maxWidth: "800px"
+            }}
+          >
 
           <input
             name="nombre"
@@ -372,21 +403,21 @@ export default function Clientes() {
             ➕ Guardar Cliente
           </button>
 
-        </form>
+          </form>
 
-      </div>
+        </div>
 
-      <div
-        style={{
-          background: "#fff",
-          padding: "20px",
-          borderRadius: "12px",
-          boxShadow:
-            "0 2px 8px rgba(0,0,0,0.08)"
-        }}
-      >
+        <div
+          style={{
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow:
+              "0 2px 8px rgba(0,0,0,0.08)"
+          }}
+        >
 
-        <h2>🔎 Buscar clientes</h2>
+          <h2>🔎 Buscar clientes</h2>
 
         <input
           value={busqueda}
@@ -514,12 +545,12 @@ export default function Clientes() {
 
         </div>
 
-        {clientesFiltrados.length === 0 && (
-          <p>
-            No se encontraron clientes.
-          </p>
-        )}
-
+          {clientesFiltrados.length === 0 && (
+            <p>
+              No se encontraron clientes.
+            </p>
+          )}
+        </div>
       </div>
 
       {editando && (

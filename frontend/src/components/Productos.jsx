@@ -224,9 +224,36 @@ function Productos() {
 
       </div>
 
-      <ProductoForm
-        onGuardar={agregarProducto}
-      />
+      <div className="grid grid-cols-1 xl:grid-cols-[1.25fr_0.75fr] gap-6 mb-6">
+        <div>
+          <ProductoForm onGuardar={agregarProducto} />
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-5 h-fit">
+          <h2 className="text-xl font-bold mb-4">Resumen</h2>
+
+          <div className="space-y-3">
+            <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-600">Total</span>
+              <strong>{productos.length}</strong>
+            </div>
+
+            <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-600">Stock bajo</span>
+              <strong className="text-red-600">
+                {productos.filter((producto) => Number(producto.stock) <= Number(producto.stock_minimo || 0)).length}
+              </strong>
+            </div>
+
+            <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-600">Con stock</span>
+              <strong className="text-green-600">
+                {productos.filter((producto) => Number(producto.stock) > Number(producto.stock_minimo || 0)).length}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="bg-white rounded-lg shadow p-5 mt-6">
 

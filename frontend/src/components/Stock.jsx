@@ -583,12 +583,86 @@ export default function Stock() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "15px",
+          gridTemplateColumns: "1.2fr 1fr",
+          gap: "20px",
           marginBottom: "24px",
+          alignItems: "stretch",
         }}
       >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: "15px",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: "20px",
+              borderRadius: "12px",
+              boxShadow:
+                "0 2px 8px rgba(0,0,0,0.08)",
+            }}
+          >
+            <div>📦 Productos</div>
+
+            <h2
+              style={{
+                margin: "8px 0 0",
+              }}
+            >
+              {productos.length}
+            </h2>
+          </div>
+
+          <div
+            style={{
+              background: "#fee2e2",
+              color: "#991b1b",
+              padding: "20px",
+              borderRadius: "12px",
+              boxShadow:
+                "0 2px 8px rgba(0,0,0,0.08)",
+            }}
+          >
+            <div>⚠️ Stock bajo</div>
+
+            <h2
+              style={{
+                margin: "8px 0 0",
+              }}
+            >
+              {
+                productosStockBajo.length
+              }
+            </h2>
+          </div>
+
+          <div
+            style={{
+              background: "#dcfce7",
+              color: "#166534",
+              padding: "20px",
+              borderRadius: "12px",
+              boxShadow:
+                "0 2px 8px rgba(0,0,0,0.08)",
+            }}
+          >
+            <div>✅ Stock OK</div>
+
+            <h2
+              style={{
+                margin: "8px 0 0",
+              }}
+            >
+              {
+                productosStockOK.length
+              }
+            </h2>
+          </div>
+        </div>
+
         <div
           style={{
             background: "#fff",
@@ -596,63 +670,22 @@ export default function Stock() {
             borderRadius: "12px",
             boxShadow:
               "0 2px 8px rgba(0,0,0,0.08)",
+            minHeight: "100%",
           }}
         >
-          <div>📦 Productos</div>
+          <h2 style={{ marginTop: 0 }}>Resumen rápido</h2>
 
-          <h2
-            style={{
-              margin: "8px 0 0",
-            }}
-          >
-            {productos.length}
-          </h2>
-        </div>
-
-        <div
-          style={{
-            background: "#fee2e2",
-            color: "#991b1b",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow:
-              "0 2px 8px rgba(0,0,0,0.08)",
-          }}
-        >
-          <div>⚠️ Stock bajo</div>
-
-          <h2
-            style={{
-              margin: "8px 0 0",
-            }}
-          >
-            {
-              productosStockBajo.length
-            }
-          </h2>
-        </div>
-
-        <div
-          style={{
-            background: "#dcfce7",
-            color: "#166534",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow:
-              "0 2px 8px rgba(0,0,0,0.08)",
-          }}
-        >
-          <div>✅ Stock OK</div>
-
-          <h2
-            style={{
-              margin: "8px 0 0",
-            }}
-          >
-            {
-              productosStockOK.length
-            }
-          </h2>
+          <div style={{ display: "grid", gap: "10px" }}>
+            <div>
+              <strong>Productos:</strong> {productos.length}
+            </div>
+            <div>
+              <strong>Stock bajo:</strong> {productosStockBajo.length}
+            </div>
+            <div>
+              <strong>Stock OK:</strong> {productosStockOK.length}
+            </div>
+          </div>
         </div>
       </div>
 
