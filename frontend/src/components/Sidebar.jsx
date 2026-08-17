@@ -1,178 +1,100 @@
 import { NavLink } from "react-router-dom"
 import "../styles/sidebar.css"
 
+const menuItems = [
+  {
+    to: "/",
+    icon: "🏠",
+    label: "Dashboard",
+    end: true,
+  },
+  {
+    to: "/productos",
+    icon: "👗",
+    label: "Productos",
+  },
+  {
+    to: "/stock",
+    icon: "📦",
+    label: "Stock",
+  },
+  {
+    to: "/ventas",
+    icon: "🛒",
+    label: "Ventas",
+  },
+  {
+    to: "/clientes",
+    icon: "👥",
+    label: "Clientes",
+  },
+  {
+    to: "/caja",
+    icon: "💰",
+    label: "Caja",
+  },
+  {
+    to: "/reportes",
+    icon: "📊",
+    label: "Reportes",
+  },
+]
+
 export default function Sidebar() {
   return (
-    <aside
-      style={{
-        width: "240px",
-        minHeight: "100vh",
-        background: "#ffffff",
-        padding: "25px 15px",
-        boxSizing: "border-box",
-        borderRight: "1px solid #e5e5e5",
-      }}
-    >
-      <div
-        style={{
-          textAlign: "center",
-          marginBottom: "25px",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "32px",
-            marginBottom: "5px",
-          }}
-        >
+    <aside className="sidebar">
+
+      <div className="sidebar-brand">
+
+        <div className="sidebar-logo">
           👗
         </div>
 
-        <h2
-          style={{
-            margin: 0,
-            color: "#333",
-            fontSize: "20px",
-          }}
-        >
+        <div className="sidebar-title">
           María Paz
-        </h2>
+        </div>
 
-        <p
-          style={{
-            margin: "5px 0 0",
-            color: "#888",
-            fontSize: "13px",
-          }}
-        >
+        <div className="sidebar-subtitle">
           ERP Showroom
-        </p>
+        </div>
+
       </div>
 
-      <hr />
+      <div className="sidebar-divider" />
 
-      <nav
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-          gap: "10px",
-          marginTop: "20px",
-        }}
-      >
-        <NavLink
-          to="/"
-          end
-          style={({ isActive }) => ({
-            textDecoration: "none",
-            color: isActive ? "#fff" : "#333",
-            background: isActive ? "#111827" : "#f3f4f6",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            fontWeight: 600,
-            textAlign: "center",
-            transition: "all 0.2s ease",
-          })}
-        >
-          🏠 Dashboard
-        </NavLink>
+      <nav className="sidebar-nav">
 
-        <NavLink
-          to="/productos"
-          style={({ isActive }) => ({
-            textDecoration: "none",
-            color: isActive ? "#fff" : "#333",
-            background: isActive ? "#111827" : "#f3f4f6",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            fontWeight: 600,
-            textAlign: "center",
-            transition: "all 0.2s ease",
-          })}
-        >
-          👗 Productos
-        </NavLink>
+        {menuItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="sidebar-icon">
+              {item.icon}
+            </span>
 
-        <NavLink
-          to="/stock"
-          style={({ isActive }) => ({
-            textDecoration: "none",
-            color: isActive ? "#fff" : "#333",
-            background: isActive ? "#111827" : "#f3f4f6",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            fontWeight: 600,
-            textAlign: "center",
-            transition: "all 0.2s ease",
-          })}
-        >
-          📦 Stock
-        </NavLink>
+            <span>
+              {item.label}
+            </span>
+          </NavLink>
+        ))}
 
-        <NavLink
-          to="/ventas"
-          style={({ isActive }) => ({
-            textDecoration: "none",
-            color: isActive ? "#fff" : "#333",
-            background: isActive ? "#111827" : "#f3f4f6",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            fontWeight: 600,
-            textAlign: "center",
-            transition: "all 0.2s ease",
-          })}
-        >
-          🛒 Ventas
-        </NavLink>
-
-        <NavLink
-          to="/clientes"
-          style={({ isActive }) => ({
-            textDecoration: "none",
-            color: isActive ? "#fff" : "#333",
-            background: isActive ? "#111827" : "#f3f4f6",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            fontWeight: 600,
-            textAlign: "center",
-            transition: "all 0.2s ease",
-          })}
-        >
-          👥 Clientes
-        </NavLink>
-
-        <NavLink
-          to="/caja"
-          style={({ isActive }) => ({
-            textDecoration: "none",
-            color: isActive ? "#fff" : "#333",
-            background: isActive ? "#111827" : "#f3f4f6",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            fontWeight: 600,
-            textAlign: "center",
-            transition: "all 0.2s ease",
-          })}
-        >
-          💰 Caja
-        </NavLink>
-
-        <NavLink
-          to="/reportes"
-          style={({ isActive }) => ({
-            textDecoration: "none",
-            color: isActive ? "#fff" : "#333",
-            background: isActive ? "#111827" : "#f3f4f6",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            fontWeight: 600,
-            textAlign: "center",
-            transition: "all 0.2s ease",
-            gridColumn: "1 / -1",
-          })}
-        >
-          📊 Reportes
-        </NavLink>
       </nav>
+
+      <div className="sidebar-footer">
+        <div className="sidebar-footer-title">
+          ERP Showroom
+        </div>
+
+        <div className="sidebar-footer-version">
+          MVP · v1.0
+        </div>
+      </div>
+
     </aside>
   )
 }
