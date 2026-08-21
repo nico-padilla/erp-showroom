@@ -1,8 +1,6 @@
 import { API } from "../config"
 import { useEffect, useState } from "react"
 
-
-
 export default function Ventas() {
   const [productos, setProductos] = useState([])
   const [ventas, setVentas] = useState([])
@@ -18,11 +16,18 @@ export default function Ventas() {
   const [error, setError] = useState("")
   const [cargando, setCargando] = useState(false)
 
+  // Última venta realizada
+  const [ultimaVenta, setUltimaVenta] = useState(null)
+
   useEffect(() => {
     cargarProductos()
     cargarVentas()
     cargarClientes()
   }, [])
+
+  // ==========================================
+  // PRODUCTOS
+  // ==========================================
 
   async function cargarProductos() {
     try {
@@ -33,12 +38,17 @@ export default function Ventas() {
       }
 
       const data = await res.json()
+
       setProductos(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error(error)
       setError(error.message || "Error cargando productos")
     }
   }
+
+  // ==========================================
+  // VENTAS
+  // ==========================================
 
   async function cargarVentas() {
     try {
@@ -49,11 +59,16 @@ export default function Ventas() {
       }
 
       const data = await res.json()
+
       setVentas(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error(error)
     }
   }
+
+  // ==========================================
+  // CLIENTES
+  // ==========================================
 
   async function cargarClientes() {
     try {
@@ -64,11 +79,16 @@ export default function Ventas() {
       }
 
       const data = await res.json()
+
       setClientes(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error(error)
     }
   }
+
+  // ==========================================
+  // AGREGAR AL CARRITO
+  // ==========================================
 
   function agregarAlCarrito(producto) {
     const cantidadAgregar = Number(cantidad)
@@ -129,6 +149,10 @@ export default function Ventas() {
     setError("")
   }
 
+  // ==========================================
+  // CAMBIAR CANTIDAD
+  // ==========================================
+
   function cambiarCantidad(id, valor) {
     const nuevaCantidad = Number(valor)
 
@@ -161,6 +185,10 @@ export default function Ventas() {
     setError("")
   }
 
+  // ==========================================
+  // ELIMINAR DEL CARRITO
+  // ==========================================
+
   function eliminarDelCarrito(id) {
     setCarrito(
       carrito.filter(
@@ -169,11 +197,19 @@ export default function Ventas() {
     )
   }
 
+  // ==========================================
+  // TOTAL
+  // ==========================================
+
   const total = carrito.reduce(
     (suma, item) =>
       suma + Number(item.subtotal),
     0
   )
+
+  // ==========================================
+  // FILTRAR PRODUCTOS
+  // ==========================================
 
   const productosFiltrados = productos.filter(producto => {
     const texto =
@@ -191,6 +227,10 @@ export default function Ventas() {
         .includes(texto)
     )
   })
+
+  // ==========================================
+  // REALIZAR VENTA
+  // ==========================================
 
   async function realizarVenta() {
     if (carrito.length === 0) {
@@ -241,13 +281,25 @@ export default function Ventas() {
         throw new Error(detalle)
       }
 
+      // Buscar los datos completos del cliente
+      const clienteSeleccionado =
+        clientes.find(
+          cliente =>
+            Number(cliente.id) ===
+            Number(clienteId)
+        )
+
       const ventaCompleta = {
         ...data,
         cliente_id: Number(clienteId),
+        cliente: clienteSeleccionado,
         metodo_pago: metodoPago,
         detalles: carrito,
         total: total
       }
+
+      // Guardamos la última venta
+      setUltimaVenta(ventaCompleta)
 
       setVentas(prev => [
         ...prev,
@@ -258,6 +310,7 @@ export default function Ventas() {
         "Venta realizada correctamente ✅"
       )
 
+      // Imprimir automáticamente
       imprimirTicket(ventaCompleta)
 
       setCarrito([])
@@ -272,176 +325,389 @@ export default function Ventas() {
         error?.message ||
         "No se pudo realizar la venta"
       )
-
     } finally {
       setCargando(false)
     }
   }
 
-  function imprimirTicket(venta) {
-    const ventana = window.open(
-      "",
-      "_blank",
-      "width=400,height=700"
-    )
+  // ==========================================
+  // IMPRIMIR TICKET
+  // ==========================================
 
-    if (!ventana) {
-      alert(
-        "El navegador bloqueó la ventana de impresión."
-      )
+ function imprimirTicket(venta) {
+  const ventana = window.open(
+    "",
+    "_blank",
+    "width=400,height=700"
+  )
+
+  if (!ventana) {
+    alert(
+      "El navegador bloqueó la ventana de impresión."
+    )
+    return
+  }
+
+  const detalles = venta.detalles || []
+
+  const escaparHTML = (texto) => {
+    return String(texto ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;")
+  }
+
+  const filas = detalles
+    .map(item => {
+      const nombre = escaparHTML(item.nombre)
+      const cantidad = Number(item.cantidad || 0)
+      const precio = Number(item.precio || 0)
+      const subtotal = Number(item.subtotal || 0)
+
+      return `
+        <div class="producto">
+          <div class="producto-nombre">
+            ${nombre}
+          </div>
+
+          <div class="producto-linea">
+            <span>
+              ${cantidad} x
+              $${precio.toLocaleString("es-AR")}
+            </span>
+
+            <strong>
+              $${subtotal.toLocaleString("es-AR")}
+            </strong>
+          </div>
+        </div>
+      `
+    })
+    .join("")
+
+  const numeroVenta = escaparHTML(venta.id || "")
+  const metodoPago = escaparHTML(
+    venta.metodo_pago || "-"
+  )
+
+  const totalVenta = Number(venta.total || 0)
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>
+    Ticket Venta #${numeroVenta}
+  </title>
+
+  <style>
+
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 80mm;
+      margin: 0;
+      padding: 0;
+      background: white;
+    }
+
+    body {
+      padding: 6mm 4mm;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #000;
+    }
+
+    .centrado {
+      text-align: center;
+    }
+
+    .nombre {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .direccion {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .linea {
+      border-top: 1px dashed #000;
+      margin: 10px 0;
+    }
+
+    .venta {
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .detalle-titulo {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .producto {
+      margin-bottom: 9px;
+    }
+
+    .producto-nombre {
+      font-weight: bold;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .producto-linea {
+      display: flex;
+      justify-content: space-between;
+      gap: 5px;
+      font-size: 11px;
+    }
+
+    .total {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .gracias {
+      text-align: center;
+      font-size: 13px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .contacto {
+      text-align: center;
+      font-size: 10px;
+      margin-top: 8px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="centrado">
+
+    <div class="nombre">
+      MARÍA PAZ SHOWROOM
+    </div>
+
+    <div class="direccion">
+      Luro 3162, Oficina 302
+    </div>
+
+    <div class="direccion">
+      Mar del Plata
+    </div>
+
+    <div class="direccion">
+      WhatsApp: 223 6001990
+    </div>
+
+    <div class="direccion">
+      Instagram: @mariapaz.mdp
+    </div>
+
+  </div>
+
+  <div class="linea"></div>
+
+  <div class="venta">
+
+    <strong>Venta:</strong>
+    #${numeroVenta}
+
+    <br>
+
+    <strong>Fecha:</strong>
+    ${new Date().toLocaleString("es-AR")}
+
+    <br>
+
+    <strong>Medio de pago:</strong>
+    ${metodoPago}
+
+  </div>
+
+  <div class="linea"></div>
+
+  <div class="detalle-titulo">
+    DETALLE DE COMPRA
+  </div>
+
+  ${filas}
+
+  <div class="linea"></div>
+
+  <div class="total">
+    TOTAL
+    <br>
+    $${totalVenta.toLocaleString("es-AR")}
+  </div>
+
+  <div class="gracias">
+    ¡Gracias por tu compra!
+  </div>
+
+  <div class="contacto">
+    María Paz Showroom
+  </div>
+
+</body>
+
+</html>
+`
+
+  ventana.document.open()
+  ventana.document.write(html)
+  ventana.document.close()
+
+  ventana.onload = function () {
+    setTimeout(() => {
+      ventana.focus()
+      ventana.print()
+    }, 300)
+  }
+}
+
+
+  // ==========================================
+  // ENVIAR VENTA POR WHATSAPP
+  // ==========================================
+
+  function enviarWhatsApp(venta) {
+    if (!venta) {
+      alert("No hay una venta para enviar.")
       return
     }
 
-    const detalles =
-      venta.detalles || []
+    const cliente = venta.cliente || {}
 
-    const filas = detalles
-      .map(item => `
-        <div style="margin:10px 0">
-          <strong>${item.nombre}</strong>
-          <br>
-          Código: ${item.codigo || ""}
-          <br>
-          ${item.cantidad} x
-          $${Number(item.precio).toLocaleString("es-AR")}
-          <strong style="float:right">
-            $${Number(item.subtotal).toLocaleString("es-AR")}
-          </strong>
-        </div>
-      `)
-      .join("")
+    /*
+      Buscamos distintos nombres posibles
+      para el teléfono del cliente.
+    */
 
-    ventana.document.write(`
-      <!DOCTYPE html>
+    const telefono =
+      cliente.telefono ||
+      cliente.celular ||
+      cliente.whatsapp ||
+      ""
 
-      <html lang="es">
+    const nombreCliente =
+      `${cliente.nombre || ""} ${cliente.apellido || ""}`.trim()
 
-      <head>
+    let mensajeWhatsApp =
+      `Hola ${nombreCliente || "😊"}!\n\n`
 
-        <title>
-          Ticket Venta #${venta.id || ""}
-        </title>
+    mensajeWhatsApp +=
+      `Gracias por tu compra en María Paz Showroom 💕\n\n`
 
-        <style>
+    mensajeWhatsApp +=
+      `🧾 *Venta #${venta.id}*\n`
 
-          @page {
-            size: 80mm auto;
-            margin: 0;
-          }
+    mensajeWhatsApp +=
+      `💳 Medio de pago: ${venta.metodo_pago}\n\n`
 
-          body {
-            width: 80mm;
-            margin: 0;
-            padding: 10px;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #000;
-          }
+    mensajeWhatsApp +=
+      `*DETALLE DE COMPRA*\n`
 
-          .centrado {
-            text-align: center;
-          }
+    venta.detalles.forEach(item => {
+      mensajeWhatsApp +=
+        `• ${item.nombre} - ${item.cantidad} x $${Number(item.precio).toLocaleString("es-AR")}\n`
 
-          .nombre {
-            font-size: 20px;
-            font-weight: bold;
-          }
+      mensajeWhatsApp +=
+        `  Subtotal: $${Number(item.subtotal).toLocaleString("es-AR")}\n`
+    })
 
-          .linea {
-            border-top: 1px dashed #000;
-            margin: 10px 0;
-          }
+    mensajeWhatsApp +=
+      `\n💰 *TOTAL: $${Number(venta.total).toLocaleString("es-AR")}*\n\n`
 
-          .total {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            margin: 15px 0;
-          }
+    mensajeWhatsApp +=
+      `¡Gracias por elegirnos! 💕\n`
 
-          .gracias {
-            text-align: center;
-            font-weight: bold;
-            margin-top: 15px;
-          }
+    mensajeWhatsApp +=
+      `María Paz Showroom\n`
 
-        </style>
+    mensajeWhatsApp +=
+      `📍 Luro 3162, Oficina 302 - Mar del Plata`
 
-      </head>
+    const textoCodificado =
+      encodeURIComponent(mensajeWhatsApp)
 
-      <body>
+    /*
+      Si tenemos teléfono,
+      abrimos directamente el chat.
+    */
 
-        <div class="centrado">
+    if (telefono) {
+      let numero = String(telefono)
+        .replace(/\D/g, "")
 
-          <div class="nombre">
-            MARÍA PAZ SHOWROOM
-          </div>
+      /*
+        Argentina:
+        si el número empieza con 0,
+        lo quitamos.
+      */
 
-          <div>
-            Luro 3162, Oficina 302
-          </div>
+      if (numero.startsWith("0")) {
+        numero = numero.substring(1)
+      }
 
-          <div>
-            Mar del Plata
-          </div>
+      /*
+        Si tiene 10 dígitos,
+        agregamos código de Argentina.
+      */
 
-          <div>
-            WhatsApp: 223 6001990
-          </div>
+      if (
+        numero.length === 10 &&
+        !numero.startsWith("54")
+      ) {
+        numero = `54${numero}`
+      }
 
-          <div>
-            Instagram: @mariapaz.mdp
-          </div>
+      const url =
+        `https://wa.me/${numero}?text=${textoCodificado}`
 
-        </div>
+      window.open(url, "_blank")
 
-        <div class="linea"></div>
+      return
+    }
 
-        <strong>Venta:</strong>
-        #${venta.id || ""}
+    /*
+      Si el cliente no tiene teléfono,
+      abrimos WhatsApp para elegir contacto.
+    */
 
-        <br>
+    const url =
+      `https://wa.me/?text=${textoCodificado}`
 
-        <strong>Fecha:</strong>
-        ${new Date().toLocaleString("es-AR")}
-
-        <br>
-
-        <strong>Medio de pago:</strong>
-        ${venta.metodo_pago}
-
-        <div class="linea"></div>
-
-        <strong>DETALLE DE COMPRA</strong>
-
-        ${filas}
-
-        <div class="linea"></div>
-
-        <div class="total">
-          TOTAL
-          <br>
-          $${Number(venta.total).toLocaleString("es-AR")}
-        </div>
-
-        <div class="gracias">
-          ¡Gracias por tu compra!
-        </div>
-
-        <script>
-          window.onload = function() {
-            window.print()
-          }
-        </script>
-
-      </body>
-
-      </html>
-    `)
-
-    ventana.document.close()
+    window.open(url, "_blank")
   }
+
+  // ==========================================
+  // RENDER
+  // ==========================================
 
   return (
     <div
@@ -459,7 +725,8 @@ export default function Ventas() {
           style={{
             background: "#d1fae5",
             padding: "12px",
-            marginBottom: "15px"
+            marginBottom: "15px",
+            borderRadius: "8px"
           }}
         >
           {mensaje}
@@ -472,10 +739,73 @@ export default function Ventas() {
             background: "#fee2e2",
             color: "#991b1b",
             padding: "12px",
-            marginBottom: "15px"
+            marginBottom: "15px",
+            borderRadius: "8px"
           }}
         >
           {error}
+        </div>
+      )}
+
+      {/* ======================================
+          ÚLTIMA VENTA
+      ====================================== */}
+
+      {ultimaVenta && (
+        <div
+          style={{
+            background: "#f0fdf4",
+            border: "1px solid #86efac",
+            padding: "15px",
+            marginBottom: "20px",
+            borderRadius: "10px"
+          }}
+        >
+
+          <strong>
+            ✅ Venta #{ultimaVenta.id} realizada
+          </strong>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              marginTop: "12px",
+              flexWrap: "wrap"
+            }}
+          >
+
+            <button
+              onClick={() =>
+                imprimirTicket(ultimaVenta)
+              }
+              style={{
+                padding: "12px 18px",
+                cursor: "pointer"
+              }}
+            >
+              🖨️ IMPRIMIR TICKET
+            </button>
+
+            <button
+              onClick={() =>
+                enviarWhatsApp(ultimaVenta)
+              }
+              style={{
+                padding: "12px 18px",
+                cursor: "pointer",
+                background: "#25D366",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                fontWeight: "bold"
+              }}
+            >
+              📱 ENVIAR POR WHATSAPP
+            </button>
+
+          </div>
+
         </div>
       )}
 
@@ -486,6 +816,10 @@ export default function Ventas() {
           gap: "20px"
         }}
       >
+
+        {/* ======================================
+            BUSCAR PRODUCTOS
+        ====================================== */}
 
         <div
           style={{
@@ -506,7 +840,8 @@ export default function Ventas() {
             style={{
               width: "100%",
               padding: "12px",
-              marginBottom: "10px"
+              marginBottom: "10px",
+              boxSizing: "border-box"
             }}
           />
 
@@ -520,7 +855,8 @@ export default function Ventas() {
             style={{
               width: "100%",
               padding: "12px",
-              marginBottom: "15px"
+              marginBottom: "15px",
+              boxSizing: "border-box"
             }}
           />
 
@@ -535,7 +871,8 @@ export default function Ventas() {
                   border: "1px solid #ddd",
                   padding: "12px",
                   marginBottom: "8px",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  borderRadius: "8px"
                 }}
               >
 
@@ -567,6 +904,10 @@ export default function Ventas() {
             ))}
 
         </div>
+
+        {/* ======================================
+            CARRITO
+        ====================================== */}
 
         <div
           style={{
@@ -648,6 +989,8 @@ export default function Ventas() {
             {total.toLocaleString("es-AR")}
           </h2>
 
+          {/* CLIENTE */}
+
           <label>
             Cliente
           </label>
@@ -660,7 +1003,8 @@ export default function Ventas() {
             style={{
               width: "100%",
               padding: "12px",
-              margin: "8px 0"
+              margin: "8px 0",
+              boxSizing: "border-box"
             }}
           >
 
@@ -680,6 +1024,8 @@ export default function Ventas() {
 
           </select>
 
+          {/* MEDIO DE PAGO */}
+
           <label>
             Medio de pago
           </label>
@@ -692,7 +1038,8 @@ export default function Ventas() {
             style={{
               width: "100%",
               padding: "12px",
-              margin: "8px 0 15px"
+              margin: "8px 0 15px",
+              boxSizing: "border-box"
             }}
           >
 
@@ -718,6 +1065,8 @@ export default function Ventas() {
 
           </select>
 
+          {/* REALIZAR VENTA */}
+
           <button
             onClick={realizarVenta}
             disabled={
@@ -742,11 +1091,16 @@ export default function Ventas() {
 
       </div>
 
+      {/* ======================================
+          HISTORIAL
+      ====================================== */}
+
       <div
         style={{
           marginTop: "30px",
           background: "#fff",
-          padding: "20px"
+          padding: "20px",
+          borderRadius: "10px"
         }}
       >
 
