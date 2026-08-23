@@ -46,6 +46,9 @@ app = FastAPI(
 # ==========================
 # CORS
 # ==========================
+# Permitimos el frontend de producción y los entornos locales.
+# También dejamos una expresión para cualquier subdominio *.onrender.com
+# que pueda utilizarse para el frontend del ERP.
 
 app.add_middleware(
     CORSMiddleware,
@@ -57,7 +60,9 @@ app.add_middleware(
         "http://localhost:5175",
         "http://127.0.0.1:5175",
         "https://erp-showroom-1.onrender.com",
+        "https://erp-showroom.onrender.com",
     ],
+    allow_origin_regex=r"https://.*\.onrender\.com$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
