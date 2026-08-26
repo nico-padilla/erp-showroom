@@ -106,9 +106,9 @@ export default function CodigoBarras({
       <style>
         {`
           @page {
-            size: 50mm 25mm;
-            margin: 0;
-          }
+  size: 50mm 25mm;
+  margin: 0;
+}	
 
           @media print {
 
@@ -197,11 +197,11 @@ export default function CodigoBarras({
           }
 
           .codigo-barras {
-            width: 43mm;
-            height: 7mm;
-            display: block;
-            margin: 0.4mm auto 0;
-          }
+  width: 46mm !important;
+  height: 10mm !important;
+  display: block !important;
+  margin: 0.5mm auto 0 !important;
+}
 
           .numero-codigo {
             font-size: 6px;
