@@ -29,7 +29,7 @@ function Etiqueta({ producto }) {
     <div className="etiqueta-impresion">
 
       <div className="marca">
-        MARÍA PAZ BY CHARA
+        MARÍA PAZ BY CHARA - PRUEBA123
       </div>
 
       <div className="producto">
