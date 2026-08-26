@@ -15,8 +15,8 @@ function Etiqueta({ producto }) {
     try {
       JsBarcode(svgRef.current, String(codigo), {
         format: "CODE128",
-        width: 1.2,
-        height: 25,
+        width: 1.4,
+        height: 32,
         displayValue: false,
         margin: 0,
       })
@@ -27,7 +27,7 @@ function Etiqueta({ producto }) {
 
   return (
     <div className="etiqueta-impresion">
-      
+
       <div className="marca">
         MARÍA PAZ BY CHARA
       </div>
@@ -46,9 +46,7 @@ function Etiqueta({ producto }) {
 
       <div className="precio">
         $
-        {Number(
-          producto?.precio_venta || 0
-        ).toLocaleString("es-AR")}
+        {Number(producto?.precio_venta || 0).toLocaleString("es-AR")}
       </div>
 
       <svg
@@ -63,7 +61,6 @@ function Etiqueta({ producto }) {
     </div>
   )
 }
-
 
 export default function CodigoBarras({
   producto,
@@ -105,114 +102,270 @@ export default function CodigoBarras({
     <>
       <style>
         {`
+
+          /* ==========================================
+             CONFIGURACIÓN DE LA ETIQUETA
+             50 mm ANCHO x 25 mm ALTO
+          ========================================== */
+
           @page {
-  size: 50mm 25mm;
-  margin: 0;
-}	
+            size: 50mm 25mm;
+            margin: 0;
+          }
+
+
+          /* ==========================================
+             PANTALLA
+          ========================================== */
+
+          .zona-etiquetas {
+            display: none;
+          }
+
+
+          /* ==========================================
+             IMPRESIÓN
+          ========================================== */
 
           @media print {
 
-            html,
-            body {
+            html {
               width: 50mm !important;
+              height: 25mm !important;
               margin: 0 !important;
               padding: 0 !important;
+            }
+
+            body {
+              width: 50mm !important;
+              height: 25mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              overflow: hidden !important;
             }
 
             body * {
               visibility: hidden !important;
             }
 
-            .zona-etiquetas,
-            .zona-etiquetas * {
-              visibility: visible !important;
-            }
-
             .zona-etiquetas {
+              display: block !important;
+              visibility: visible !important;
+
               position: absolute !important;
+
               left: 0 !important;
               top: 0 !important;
+
               width: 50mm !important;
+
               margin: 0 !important;
               padding: 0 !important;
             }
 
+            .zona-etiquetas * {
+              visibility: visible !important;
+            }
+
+
+            /* ======================================
+               CADA ETIQUETA
+            ====================================== */
+
             .etiqueta-impresion {
+              display: flex !important;
+
+              flex-direction: column !important;
+
+              justify-content: flex-start !important;
+              align-items: center !important;
+
               width: 50mm !important;
               height: 25mm !important;
+
+              min-width: 50mm !important;
+              max-width: 50mm !important;
+
+              min-height: 25mm !important;
+              max-height: 25mm !important;
+
               box-sizing: border-box !important;
+
               margin: 0 !important;
-              padding: 1.2mm !important;
+
+              padding: 1mm 1.5mm 0.5mm 1.5mm !important;
+
+              overflow: hidden !important;
+
               page-break-after: always !important;
               break-after: page !important;
-              overflow: hidden !important;
+
               background: white !important;
+
+              font-family: Arial, Helvetica, sans-serif !important;
+
+              text-align: center !important;
             }
+
+
+            .etiqueta-impresion:last-child {
+              page-break-after: auto !important;
+              break-after: auto !important;
+            }
+
+
+            /* ======================================
+               MARCA
+            ====================================== */
+
+            .marca {
+              width: 100% !important;
+
+              font-size: 9px !important;
+              font-weight: 900 !important;
+
+              line-height: 9px !important;
+
+              height: 9px !important;
+
+              margin: 0 !important;
+              padding: 0 !important;
+
+              white-space: nowrap !important;
+
+              overflow: hidden !important;
+            }
+
+
+            /* ======================================
+               NOMBRE
+            ====================================== */
+
+            .producto {
+              width: 100% !important;
+
+              font-size: 9px !important;
+              font-weight: 700 !important;
+
+              line-height: 9px !important;
+
+              height: 9px !important;
+
+              margin: 0.5mm 0 0 0 !important;
+              padding: 0 !important;
+
+              white-space: nowrap !important;
+
+              overflow: hidden !important;
+
+              text-overflow: ellipsis !important;
+            }
+
+
+            /* ======================================
+               TALLE / COLOR
+            ====================================== */
+
+            .detalle {
+              width: 100% !important;
+
+              font-size: 8px !important;
+              font-weight: 600 !important;
+
+              line-height: 8px !important;
+
+              height: 8px !important;
+
+              margin: 0.2mm 0 0 0 !important;
+              padding: 0 !important;
+
+              white-space: nowrap !important;
+
+              overflow: hidden !important;
+            }
+
+
+            /* ======================================
+               PRECIO
+            ====================================== */
+
+            .precio {
+              width: 100% !important;
+
+              font-size: 11px !important;
+              font-weight: 900 !important;
+
+              line-height: 11px !important;
+
+              height: 11px !important;
+
+              margin: 0.3mm 0 0 0 !important;
+              padding: 0 !important;
+
+              white-space: nowrap !important;
+            }
+
+
+            /* ======================================
+               CÓDIGO DE BARRAS
+            ====================================== */
+
+            .codigo-barras {
+              display: block !important;
+
+              width: 46mm !important;
+
+              height: 7.5mm !important;
+
+              min-width: 46mm !important;
+              max-width: 46mm !important;
+
+              margin: 0.4mm auto 0 !important;
+
+              padding: 0 !important;
+            }
+
+
+            /* ======================================
+               NÚMERO DEL CÓDIGO
+            ====================================== */
+
+            .numero-codigo {
+              width: 100% !important;
+
+              font-size: 8px !important;
+
+              font-weight: 700 !important;
+
+              line-height: 8px !important;
+
+              height: 8px !important;
+
+              margin: 0 !important;
+              padding: 0 !important;
+
+              white-space: nowrap !important;
+            }
+
+
+            /* ======================================
+               OCULTAR INTERFAZ
+            ====================================== */
 
             .no-imprimir {
               display: none !important;
+
+              visibility: hidden !important;
             }
-          }
-
-          .etiqueta-impresion {
-            width: 50mm;
-            height: 25mm;
-            box-sizing: border-box;
-            padding: 1.2mm;
-            text-align: center;
-            overflow: hidden;
-            background: white;
-            font-family: Arial, sans-serif;
-          }
-
-          .marca {
-            font-size: 7px;
-            font-weight: bold;
-            line-height: 7px;
-          }
-
-          .producto {
-            font-size: 7px;
-            font-weight: bold;
-            line-height: 8px;
-            margin-top: 0.7mm;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          .detalle {
-            font-size: 6px;
-            line-height: 6px;
-            margin-top: 0.3mm;
-            white-space: nowrap;
-            overflow: hidden;
-          }
-
-          .precio {
-            font-size: 8px;
-            font-weight: bold;
-            line-height: 8px;
-            margin-top: 0.4mm;
-          }
-
-          .codigo-barras {
-  width: 46mm !important;
-  height: 10mm !important;
-  display: block !important;
-  margin: 0.5mm auto 0 !important;
-}
-
-          .numero-codigo {
-            font-size: 6px;
-            font-weight: bold;
-            line-height: 6px;
-            margin-top: 0.2mm;
           }
         `}
       </style>
 
-      {/* CONTROLES */}
+
+      {/* ==========================================
+          INTERFAZ - NO SE IMPRIME
+      ========================================== */}
+
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 no-imprimir">
 
         <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
@@ -240,6 +393,7 @@ export default function CodigoBarras({
           <div className="space-y-3">
 
             <label className="flex gap-2 items-center">
+
               <input
                 type="radio"
                 name="modoEtiqueta"
@@ -250,9 +404,12 @@ export default function CodigoBarras({
               <span>
                 Automático según stock
               </span>
+
             </label>
 
+
             <label className="flex gap-2 items-center">
+
               <input
                 type="radio"
                 name="modoEtiqueta"
@@ -263,7 +420,9 @@ export default function CodigoBarras({
               <span>
                 Cantidad manual
               </span>
+
             </label>
+
 
             {modo === "manual" && (
               <input
@@ -279,6 +438,7 @@ export default function CodigoBarras({
 
           </div>
 
+
           <div className="bg-gray-100 rounded-lg p-3 mt-4 text-center">
 
             <div className="text-sm text-gray-600">
@@ -291,12 +451,14 @@ export default function CodigoBarras({
 
           </div>
 
+
           {cantidad === 0 && (
             <p className="text-red-600 text-sm mt-3">
               Este producto no tiene stock.
               Elegí cantidad manual para imprimir.
             </p>
           )}
+
 
           <div className="flex justify-end gap-2 mt-5">
 
@@ -306,6 +468,7 @@ export default function CodigoBarras({
             >
               Cancelar
             </button>
+
 
             <button
               onClick={imprimir}
@@ -318,20 +481,27 @@ export default function CodigoBarras({
           </div>
 
         </div>
+
       </div>
 
 
-      {/* ETIQUETAS QUE SE VAN A IMPRIMIR */}
+      {/* ==========================================
+          ETIQUETAS
+      ========================================== */}
+
       <div className="zona-etiquetas">
 
         {etiquetas.map((_, index) => (
+
           <Etiqueta
             key={`${producto.id}-${index}`}
             producto={producto}
           />
+
         ))}
 
       </div>
+
     </>
   )
 }
