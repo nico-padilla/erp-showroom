@@ -14,12 +14,12 @@ function Etiqueta({ producto }) {
 
     try {
       JsBarcode(svgRef.current, String(codigo), {
-        format: "CODE128",
-        width: 1.4,
-        height: 32,
-        displayValue: false,
-        margin: 0,
-      })
+  format: "CODE128",
+  width: 1,
+  height: 32,
+  displayValue: false,
+  margin: 0,
+})
     } catch (error) {
       console.error("Error generando código:", error)
     }
@@ -223,29 +223,145 @@ export default function CodigoBarras({
             ====================================== */
 
             .contenido-etiqueta {
-              position: absolute !important;
+  position: absolute !important;
 
-              width: 25mm !important;
-              height: 50mm !important;
+  width: 25mm !important;
+  height: 50mm !important;
 
-              left: 12.5mm !important;
-              top: -12.5mm !important;
+  left: 12.5mm !important;
+  top: -12.5mm !important;
 
-              transform: rotate(90deg) !important;
-              transform-origin: center center !important;
+  transform: rotate(90deg) !important;
+  transform-origin: center center !important;
 
-              display: flex !important;
-              flex-direction: column !important;
+  display: flex !important;
+  flex-direction: column !important;
 
-              justify-content: flex-start !important;
-              align-items: center !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
 
-              box-sizing: border-box !important;
+  box-sizing: border-box !important;
 
-              padding: 1mm 1.5mm 0.5mm 1.5mm !important;
+  padding: 1mm !important;
 
-              overflow: hidden !important;
-            }
+  overflow: visible !important;
+}
+
+
+/* MARCA */
+.marca {
+  width: 100% !important;
+
+  font-size: 8px !important;
+  font-weight: 900 !important;
+
+  line-height: 8px !important;
+  height: 8px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  white-space: nowrap !important;
+}
+
+
+/* NOMBRE */
+.producto {
+  width: 100% !important;
+
+  font-size: 8px !important;
+  font-weight: 700 !important;
+
+  line-height: 8px !important;
+  height: 8px !important;
+
+  margin: 0.5mm 0 0 0 !important;
+  padding: 0 !important;
+
+  white-space: nowrap !important;
+
+  overflow: hidden !important;
+}
+
+
+/* TALLE / COLOR */
+.detalle {
+  width: 100% !important;
+
+  font-size: 7px !important;
+  font-weight: 600 !important;
+
+  line-height: 7px !important;
+  height: 7px !important;
+
+  margin: 0.3mm 0 0 0 !important;
+  padding: 0 !important;
+
+  white-space: nowrap !important;
+
+  overflow: hidden !important;
+}
+
+
+/* PRECIO */
+.precio {
+  width: 100% !important;
+
+  font-size: 10px !important;
+  font-weight: 900 !important;
+
+  line-height: 10px !important;
+  height: 10px !important;
+
+  margin: 0.3mm 0 0 0 !important;
+  padding: 0 !important;
+
+  white-space: nowrap !important;
+}
+
+
+/* CÓDIGO DE BARRAS */
+.codigo-barras {
+  display: block !important;
+
+  /*
+     IMPORTANTE:
+     como todo .contenido-etiqueta está rotado,
+     invertimos las dimensiones del SVG.
+  */
+
+  width: 5mm !important;
+  height: 43mm !important;
+
+  min-width: 5mm !important;
+  max-width: 5mm !important;
+
+  margin: 0.5mm auto 0 !important;
+
+  padding: 0 !important;
+
+  flex-shrink: 0 !important;
+}
+
+
+/* NÚMERO DEL CÓDIGO */
+.numero-codigo {
+  width: 100% !important;
+
+  font-size: 6px !important;
+  font-weight: 700 !important;
+
+  line-height: 6px !important;
+  height: 6px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  white-space: nowrap !important;
+}
+  
+
+         
 
 
             /* ======================================
@@ -255,12 +371,12 @@ export default function CodigoBarras({
             .marca {
               width: 100% !important;
 
-              font-size: 9px !important;
+              font-size: 7px !important;
               font-weight: 900 !important;
 
-              line-height: 9px !important;
+              line-height: 7px !important;
 
-              height: 9px !important;
+              height: 7px !important;
 
               margin: 0 !important;
               padding: 0 !important;
@@ -278,14 +394,14 @@ export default function CodigoBarras({
             .producto {
               width: 100% !important;
 
-              font-size: 9px !important;
+              font-size: 7px !important;
               font-weight: 700 !important;
 
-              line-height: 9px !important;
+              line-height: 7px !important;
 
-              height: 9px !important;
+              height: 7px !important;
 
-              margin: 0.5mm 0 0 0 !important;
+              margin: 0.2mm 0 0 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -303,14 +419,14 @@ export default function CodigoBarras({
             .detalle {
               width: 100% !important;
 
-              font-size: 8px !important;
+              font-size: 6.5px !important;
               font-weight: 600 !important;
 
-              line-height: 8px !important;
+              line-height: 6.5px !important;
 
-              height: 8px !important;
+              height: 6.5px !important;
 
-              margin: 0.2mm 0 0 0 !important;
+              margin: 0.1mm 0 0 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -326,14 +442,14 @@ export default function CodigoBarras({
             .precio {
               width: 100% !important;
 
-              font-size: 11px !important;
+              font-size: 9px !important;
               font-weight: 900 !important;
 
-              line-height: 11px !important;
+              line-height: 9px !important;
 
-              height: 11px !important;
+              height: 9px !important;
 
-              margin: 0.3mm 0 0 0 !important;
+              margin: 0.1mm 0 0 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -347,14 +463,14 @@ export default function CodigoBarras({
             .codigo-barras {
               display: block !important;
 
-              width: 46mm !important;
+              width: 43mm !important;
 
-              height: 7.5mm !important;
+              height: 5mm !important;
 
-              min-width: 46mm !important;
-              max-width: 46mm !important;
+              min-width: 43mm !important;
+              max-width: 43mm !important;
 
-              margin: 0.4mm auto 0 !important;
+              margin: 0.1mm auto 0 !important;
 
               padding: 0 !important;
             }
@@ -367,13 +483,13 @@ export default function CodigoBarras({
             .numero-codigo {
               width: 100% !important;
 
-              font-size: 8px !important;
+              font-size: 6px !important;
 
               font-weight: 700 !important;
 
-              line-height: 8px !important;
+              line-height: 6px !important;
 
-              height: 8px !important;
+              height: 6px !important;
 
               margin: 0 !important;
               padding: 0 !important;
