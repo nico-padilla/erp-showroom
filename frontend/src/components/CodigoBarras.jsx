@@ -323,6 +323,7 @@ export default function CodigoBarras({
 /* CÓDIGO DE BARRAS */
 .codigo-barras {
   display: block !important;
+  transform: rotate(90deg) !important;
 
   /*
      IMPORTANTE:
@@ -462,6 +463,7 @@ export default function CodigoBarras({
 
             .codigo-barras {
               display: block !important;
+              transform: rotate(90deg) !important;
 
               width: 43mm !important;
 
