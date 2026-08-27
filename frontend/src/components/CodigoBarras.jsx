@@ -15,8 +15,8 @@ function Etiqueta({ producto }) {
     try {
       JsBarcode(svgRef.current, String(codigo), {
   format: "CODE128",
-  width: 1,
-  height: 32,
+  width: 1.4,
+  height: 38,
   displayValue: false,
   margin: 0,
 })
