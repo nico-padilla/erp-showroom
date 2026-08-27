@@ -14,12 +14,12 @@ function Etiqueta({ producto }) {
 
     try {
       JsBarcode(svgRef.current, String(codigo), {
-  format: "CODE128",
-  width: 1,
-  height: 32,
-  displayValue: false,
-  margin: 0,
-})
+        format: "CODE128",
+        width: 1.1,
+        height: 24,
+        displayValue: false,
+        margin: 0,
+      })
     } catch (error) {
       console.error("Error generando código:", error)
     }
@@ -27,7 +27,6 @@ function Etiqueta({ producto }) {
 
   return (
     <div className="etiqueta-impresion">
-
       <div className="contenido-etiqueta">
 
         <div className="marca">
@@ -61,7 +60,6 @@ function Etiqueta({ producto }) {
         </div>
 
       </div>
-
     </div>
   )
 }
@@ -107,29 +105,16 @@ export default function CodigoBarras({
       <style>
         {`
 
-          /* ==========================================
-             CONFIGURACIÓN DE LA ETIQUETA
-             50 mm ANCHO x 25 mm ALTO
-          ========================================== */
-
           @page {
             size: 50mm 25mm;
             margin: 0;
           }
 
 
-          /* ==========================================
-             PANTALLA
-          ========================================== */
-
           .zona-etiquetas {
             display: none;
           }
 
-
-          /* ==========================================
-             IMPRESIÓN
-          ========================================== */
 
           @media print {
 
@@ -173,16 +158,13 @@ export default function CodigoBarras({
 
 
             /* ======================================
-               CADA ETIQUETA
+               ETIQUETA 50 x 25 mm
             ====================================== */
 
             .etiqueta-impresion {
-              display: flex !important;
+              position: relative !important;
 
-              flex-direction: column !important;
-
-              justify-content: flex-start !important;
-              align-items: center !important;
+              display: block !important;
 
               width: 50mm !important;
               height: 25mm !important;
@@ -196,8 +178,7 @@ export default function CodigoBarras({
               box-sizing: border-box !important;
 
               margin: 0 !important;
-
-              padding: 1mm 1.5mm 0.5mm 1.5mm !important;
+              padding: 0 !important;
 
               overflow: hidden !important;
 
@@ -219,149 +200,38 @@ export default function CodigoBarras({
 
 
             /* ======================================
-               CONTENIDO ROTADO 90 GRADOS
+               CONTENIDO
+               ESTA ROTACIÓN YA FUNCIONA
             ====================================== */
 
             .contenido-etiqueta {
-  position: absolute !important;
 
-  width: 25mm !important;
-  height: 50mm !important;
+              position: absolute !important;
 
-  left: 12.5mm !important;
-  top: -12.5mm !important;
+              width: 25mm !important;
+              height: 50mm !important;
 
-  transform: rotate(90deg) !important;
-  transform-origin: center center !important;
+              left: 12.5mm !important;
+              top: -12.5mm !important;
 
-  display: flex !important;
-  flex-direction: column !important;
+              transform: rotate(90deg) !important;
 
-  justify-content: flex-start !important;
-  align-items: center !important;
+              transform-origin: center center !important;
 
-  box-sizing: border-box !important;
+              box-sizing: border-box !important;
 
-  padding: 1mm !important;
+              display: flex !important;
 
-  overflow: visible !important;
-}
+              flex-direction: column !important;
 
+              justify-content: flex-start !important;
 
-/* MARCA */
-.marca {
-  width: 100% !important;
+              align-items: center !important;
 
-  font-size: 8px !important;
-  font-weight: 900 !important;
+              padding: 1mm !important;
 
-  line-height: 8px !important;
-  height: 8px !important;
-
-  margin: 0 !important;
-  padding: 0 !important;
-
-  white-space: nowrap !important;
-}
-
-
-/* NOMBRE */
-.producto {
-  width: 100% !important;
-
-  font-size: 8px !important;
-  font-weight: 700 !important;
-
-  line-height: 8px !important;
-  height: 8px !important;
-
-  margin: 0.5mm 0 0 0 !important;
-  padding: 0 !important;
-
-  white-space: nowrap !important;
-
-  overflow: hidden !important;
-}
-
-
-/* TALLE / COLOR */
-.detalle {
-  width: 100% !important;
-
-  font-size: 7px !important;
-  font-weight: 600 !important;
-
-  line-height: 7px !important;
-  height: 7px !important;
-
-  margin: 0.3mm 0 0 0 !important;
-  padding: 0 !important;
-
-  white-space: nowrap !important;
-
-  overflow: hidden !important;
-}
-
-
-/* PRECIO */
-.precio {
-  width: 100% !important;
-
-  font-size: 10px !important;
-  font-weight: 900 !important;
-
-  line-height: 10px !important;
-  height: 10px !important;
-
-  margin: 0.3mm 0 0 0 !important;
-  padding: 0 !important;
-
-  white-space: nowrap !important;
-}
-
-
-/* CÓDIGO DE BARRAS */
-.codigo-barras {
-  display: block !important;
-
-  /*
-     IMPORTANTE:
-     como todo .contenido-etiqueta está rotado,
-     invertimos las dimensiones del SVG.
-  */
-
-  width: 5mm !important;
-  height: 43mm !important;
-
-  min-width: 5mm !important;
-  max-width: 5mm !important;
-
-  margin: 0.5mm auto 0 !important;
-
-  padding: 0 !important;
-
-  flex-shrink: 0 !important;
-}
-
-
-/* NÚMERO DEL CÓDIGO */
-.numero-codigo {
-  width: 100% !important;
-
-  font-size: 6px !important;
-  font-weight: 700 !important;
-
-  line-height: 6px !important;
-  height: 6px !important;
-
-  margin: 0 !important;
-  padding: 0 !important;
-
-  white-space: nowrap !important;
-}
-  
-
-         
+              overflow: hidden !important;
+            }
 
 
             /* ======================================
@@ -369,9 +239,11 @@ export default function CodigoBarras({
             ====================================== */
 
             .marca {
+
               width: 100% !important;
 
               font-size: 7px !important;
+
               font-weight: 900 !important;
 
               line-height: 7px !important;
@@ -388,20 +260,23 @@ export default function CodigoBarras({
 
 
             /* ======================================
-               NOMBRE
+               PRODUCTO
             ====================================== */
 
             .producto {
+
               width: 100% !important;
 
               font-size: 7px !important;
+
               font-weight: 700 !important;
 
               line-height: 7px !important;
 
               height: 7px !important;
 
-              margin: 0.2mm 0 0 0 !important;
+              margin: 0.3mm 0 0 0 !important;
+
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -417,16 +292,19 @@ export default function CodigoBarras({
             ====================================== */
 
             .detalle {
+
               width: 100% !important;
 
-              font-size: 6.5px !important;
+              font-size: 6px !important;
+
               font-weight: 600 !important;
 
-              line-height: 6.5px !important;
+              line-height: 6px !important;
 
-              height: 6.5px !important;
+              height: 6px !important;
 
-              margin: 0.1mm 0 0 0 !important;
+              margin: 0.2mm 0 0 0 !important;
+
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -440,16 +318,19 @@ export default function CodigoBarras({
             ====================================== */
 
             .precio {
+
               width: 100% !important;
 
               font-size: 9px !important;
+
               font-weight: 900 !important;
 
               line-height: 9px !important;
 
               height: 9px !important;
 
-              margin: 0.1mm 0 0 0 !important;
+              margin: 0.3mm 0 0 0 !important;
+
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -458,21 +339,38 @@ export default function CodigoBarras({
 
             /* ======================================
                CÓDIGO DE BARRAS
+
+               IMPORTANTE:
+               EL CONTENIDO ESTÁ ROTADO 90°.
+
+               ANTES DE ROTAR:
+               5mm ALTO x 43mm ANCHO
+
+               DESPUÉS DE ROTAR:
+               43mm ANCHO x 5mm ALTO
             ====================================== */
 
             .codigo-barras {
+
               display: block !important;
 
-              width: 43mm !important;
+              width: 5mm !important;
 
-              height: 5mm !important;
+              height: 43mm !important;
 
-              min-width: 43mm !important;
-              max-width: 43mm !important;
+              min-width: 5mm !important;
 
-              margin: 0.1mm auto 0 !important;
+              max-width: 5mm !important;
+
+              min-height: 43mm !important;
+
+              max-height: 43mm !important;
+
+              margin: 0.5mm auto 0 !important;
 
               padding: 0 !important;
+
+              flex-shrink: 0 !important;
             }
 
 
@@ -481,6 +379,7 @@ export default function CodigoBarras({
             ====================================== */
 
             .numero-codigo {
+
               width: 100% !important;
 
               font-size: 6px !important;
@@ -492,163 +391,73 @@ export default function CodigoBarras({
               height: 6px !important;
 
               margin: 0 !important;
+
               padding: 0 !important;
 
               white-space: nowrap !important;
             }
 
-
-            /* ======================================
-               OCULTAR INTERFAZ
-            ====================================== */
-
-            .no-imprimir {
-              display: none !important;
-
-              visibility: hidden !important;
-            }
           }
         `}
       </style>
 
 
-      {/* ==========================================
-          INTERFAZ - NO SE IMPRIME
-      ========================================== */}
+      <div className="zona-etiquetas">
 
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 no-imprimir">
-
-        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-
-          <h2 className="text-xl font-bold mb-4">
-            🏷️ Imprimir etiquetas
-          </h2>
-
-          <div className="border rounded-lg p-4 mb-4">
-
-            <p className="font-bold">
-              {producto.nombre}
-            </p>
-
-            <p className="text-sm text-gray-600">
-              Código: {producto.codigo_barras || producto.codigo}
-            </p>
-
-            <p className="text-sm text-gray-600">
-              Stock disponible: {stock}
-            </p>
-
-          </div>
-
-          <div className="space-y-3">
-
-            <label className="flex gap-2 items-center">
-
-              <input
-                type="radio"
-                name="modoEtiqueta"
-                checked={modo === "stock"}
-                onChange={() => setModo("stock")}
-              />
-
-              <span>
-                Automático según stock
-              </span>
-
-            </label>
-
-
-            <label className="flex gap-2 items-center">
-
-              <input
-                type="radio"
-                name="modoEtiqueta"
-                checked={modo === "manual"}
-                onChange={() => setModo("manual")}
-              />
-
-              <span>
-                Cantidad manual
-              </span>
-
-            </label>
-
-
-            {modo === "manual" && (
-              <input
-                type="number"
-                min="1"
-                value={cantidadManual}
-                onChange={(e) =>
-                  setCantidadManual(e.target.value)
-                }
-                className="w-full border rounded px-3 py-2"
-              />
-            )}
-
-          </div>
-
-
-          <div className="bg-gray-100 rounded-lg p-3 mt-4 text-center">
-
-            <div className="text-sm text-gray-600">
-              Etiquetas a imprimir
-            </div>
-
-            <div className="text-3xl font-bold">
-              {cantidad}
-            </div>
-
-          </div>
-
-
-          {cantidad === 0 && (
-            <p className="text-red-600 text-sm mt-3">
-              Este producto no tiene stock.
-              Elegí cantidad manual para imprimir.
-            </p>
-          )}
-
-
-          <div className="flex justify-end gap-2 mt-5">
-
-            <button
-              onClick={onCerrar}
-              className="px-4 py-2 border rounded"
-            >
-              Cancelar
-            </button>
-
-
-            <button
-              onClick={imprimir}
-              disabled={cantidad <= 0}
-              className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400"
-            >
-              🖨️ Imprimir {cantidad}
-            </button>
-
-          </div>
-
-        </div>
+        {etiquetas.map((_, i) => (
+          <Etiqueta
+            key={i}
+            producto={producto}
+          />
+        ))}
 
       </div>
 
 
-      {/* ==========================================
-          ETIQUETAS
-      ========================================== */}
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          alignItems: "center"
+        }}
+      >
 
-      <div className="zona-etiquetas">
+        <button onClick={imprimir}>
+          Imprimir etiquetas
+        </button>
 
-        {etiquetas.map((_, index) => (
+        <button onClick={onCerrar}>
+          Cerrar
+        </button>
 
-          <Etiqueta
-            key={`${producto.id}-${index}`}
-            producto={producto}
+        <select
+          value={modo}
+          onChange={(e) => setModo(e.target.value)}
+        >
+
+          <option value="stock">
+            Stock ({stock})
+          </option>
+
+          <option value="manual">
+            Cantidad manual
+          </option>
+
+        </select>
+
+        {modo === "manual" && (
+          <input
+            type="number"
+            min="1"
+            value={cantidadManual}
+            onChange={(e) =>
+              setCantidadManual(e.target.value)
+            }
+            style={{
+              width: "70px"
+            }}
           />
-
-        ))}
+        )}
 
       </div>
 
