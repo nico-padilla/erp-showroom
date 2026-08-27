@@ -28,34 +28,38 @@ function Etiqueta({ producto }) {
   return (
     <div className="etiqueta-impresion">
 
-      <div className="marca">
-        MARÍA PAZ BY CHARA - PRUEBA123
-      </div>
+      <div className="contenido-etiqueta">
 
-      <div className="producto">
-        {producto?.nombre || "Producto"}
-      </div>
-
-      {(producto?.talle || producto?.color) && (
-        <div className="detalle">
-          {producto?.talle && `T: ${producto.talle}`}
-          {producto?.talle && producto?.color && "  "}
-          {producto?.color && producto.color}
+        <div className="marca">
+          MARÍA PAZ BY CHARA
         </div>
-      )}
 
-      <div className="precio">
-        $
-        {Number(producto?.precio_venta || 0).toLocaleString("es-AR")}
-      </div>
+        <div className="producto">
+          {producto?.nombre || "Producto"}
+        </div>
 
-      <svg
-        ref={svgRef}
-        className="codigo-barras"
-      />
+        {(producto?.talle || producto?.color) && (
+          <div className="detalle">
+            {producto?.talle && `T: ${producto.talle}`}
+            {producto?.talle && producto?.color && "  "}
+            {producto?.color && producto.color}
+          </div>
+        )}
 
-      <div className="numero-codigo">
-        {codigo}
+        <div className="precio">
+          $
+          {Number(producto?.precio_venta || 0).toLocaleString("es-AR")}
+        </div>
+
+        <svg
+          ref={svgRef}
+          className="codigo-barras"
+        />
+
+        <div className="numero-codigo">
+          {codigo}
+        </div>
+
       </div>
 
     </div>
@@ -211,6 +215,36 @@ export default function CodigoBarras({
             .etiqueta-impresion:last-child {
               page-break-after: auto !important;
               break-after: auto !important;
+            }
+
+
+            /* ======================================
+               CONTENIDO ROTADO 90 GRADOS
+            ====================================== */
+
+            .contenido-etiqueta {
+              position: absolute !important;
+
+              width: 25mm !important;
+              height: 50mm !important;
+
+              left: 12.5mm !important;
+              top: -12.5mm !important;
+
+              transform: rotate(90deg) !important;
+              transform-origin: center center !important;
+
+              display: flex !important;
+              flex-direction: column !important;
+
+              justify-content: flex-start !important;
+              align-items: center !important;
+
+              box-sizing: border-box !important;
+
+              padding: 1mm 1.5mm 0.5mm 1.5mm !important;
+
+              overflow: hidden !important;
             }
 
 
