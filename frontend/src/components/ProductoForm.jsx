@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-function ProductoForm({ agregarProducto }) {
+function ProductoForm({ onGuardar }) {
   const [producto, setProducto] = useState({
     codigo: "",
     codigo_barras: "",
@@ -19,23 +19,28 @@ function ProductoForm({ agregarProducto }) {
   })
 
   function manejarCambio(e) {
-    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value
+    const { name, value, type, checked } = e.target
 
     setProducto({
       ...producto,
-      [e.target.name]: value
+      [name]: type === "checkbox" ? checked : value
     })
   }
 
   function guardar(e) {
-    e?.preventDefault()
+    e.preventDefault()
 
-    agregarProducto({
+    if (typeof onGuardar !== "function") {
+      console.error("Error: agregarProducto no fue proporcionado por el componente padre")
+      return
+    }
+
+    onGuardar({
       codigo: producto.codigo,
       codigo_barras: producto.codigo_barras || null,
       nombre: producto.nombre,
       descripcion: producto.descripcion || null,
-      categoria: producto.categoria,
+      categoria: producto.categoria || null,
       marca: producto.marca || null,
       talle: producto.talle,
       color: producto.color,
@@ -75,7 +80,13 @@ function ProductoForm({ agregarProducto }) {
     >
       <h2>Nuevo Producto</h2>
 
-      <form onSubmit={guardar} style={{ display: "grid", gap: "10px", maxWidth: "700px" }}>
+      <form
+        onSubmit={guardar}
+        style={{
+          display: "grid",
+          gap: "10px"
+        }}
+      >
         <input
           name="codigo"
           placeholder="Código"
@@ -93,7 +104,7 @@ function ProductoForm({ agregarProducto }) {
 
         <input
           name="nombre"
-          placeholder="Nombre"
+          placeholder="Nombre del producto"
           value={producto.nombre}
           onChange={manejarCambio}
           required
@@ -111,7 +122,6 @@ function ProductoForm({ agregarProducto }) {
           placeholder="Categoría"
           value={producto.categoria}
           onChange={manejarCambio}
-          required
         />
 
         <input
@@ -140,18 +150,22 @@ function ProductoForm({ agregarProducto }) {
         <input
           type="number"
           name="precio_compra"
-          placeholder="Precio compra"
+          placeholder="Precio de compra"
           value={producto.precio_compra}
           onChange={manejarCambio}
+          min="0"
+          step="0.01"
           required
         />
 
         <input
           type="number"
           name="precio_venta"
-          placeholder="Precio venta"
+          placeholder="Precio de venta"
           value={producto.precio_venta}
           onChange={manejarCambio}
+          min="0"
+          step="0.01"
           required
         />
 
@@ -161,6 +175,7 @@ function ProductoForm({ agregarProducto }) {
           placeholder="Stock"
           value={producto.stock}
           onChange={manejarCambio}
+          min="0"
           required
         />
 
@@ -170,6 +185,7 @@ function ProductoForm({ agregarProducto }) {
           placeholder="Stock mínimo"
           value={producto.stock_minimo}
           onChange={manejarCambio}
+          min="0"
           required
         />
 
@@ -186,10 +202,13 @@ function ProductoForm({ agregarProducto }) {
             name="activo"
             checked={producto.activo}
             onChange={manejarCambio}
-          /> Activo
+          />
+          {" "}Activo
         </label>
 
-        <button type="submit">Guardar producto</button>
+        <button type="submit">
+          Guardar producto
+        </button>
       </form>
     </div>
   )
