@@ -223,15 +223,15 @@ export default function CodigoBarras({
             ====================================== */
 
             .contenido-etiqueta {
-  position: absolute !important;
+  position: relative !important;
 
-  width: 25mm !important;
-  height: 50mm !important;
+  width: 50mm !important;
+  height: 25mm !important;
 
-  left: 12.5mm !important;
-  top: -12.5mm !important;
+  left: auto !important;
+  top: auto !important;
 
-  transform: rotate(90deg) !important;
+  transform: none !important;
   transform-origin: center center !important;
 
   display: flex !important;
@@ -323,7 +323,7 @@ export default function CodigoBarras({
 /* CÓDIGO DE BARRAS */
 .codigo-barras {
   display: block !important;
-  transform: rotate(90deg) !important;
+  transform: none !important;
 
   /*
      IMPORTANTE:
@@ -463,14 +463,17 @@ export default function CodigoBarras({
 
             .codigo-barras {
               display: block !important;
-              transform: rotate(90deg) !important;
+              transform: none !important;
 
               width: 43mm !important;
 
-              height: 5mm !important;
+              height: 10mm !important;
 
               min-width: 43mm !important;
               max-width: 43mm !important;
+
+              min-height: 10mm !important;
+              max-height: 10mm !important;
 
               margin: 0.1mm auto 0 !important;
 
