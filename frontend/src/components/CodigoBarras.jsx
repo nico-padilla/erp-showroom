@@ -487,7 +487,11 @@ export default function CodigoBarras({
               min-height: 10mm !important;
               max-height: 10mm !important;
 
-              margin: 0.1mm auto 0 !important;
+              position: absolute !important;
+              left: 3.5mm !important;
+              top: 20mm !important;
+
+              margin: 0 !important;
 
               padding: 0 !important;
             }
