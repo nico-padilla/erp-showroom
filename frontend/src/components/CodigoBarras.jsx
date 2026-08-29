@@ -452,7 +452,7 @@ export default function CodigoBarras({
               position: absolute !important;
 
               left: 1.5mm !important;
-              top: 14mm !important;
+              top: 15mm !important;
 
               width: 47mm !important;
               height: 4mm !important;
