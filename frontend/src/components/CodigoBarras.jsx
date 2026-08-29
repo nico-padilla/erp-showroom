@@ -370,98 +370,102 @@ export default function CodigoBarras({
 
 
             /* ======================================
-               MARCA
+               TEXTOS - POSICIONES FIJAS
             ====================================== */
 
             .marca {
               display: block !important;
               visibility: visible !important;
               position: absolute !important;
+
               left: 1.5mm !important;
-              top: 1mm !important;
+              top: 0.5mm !important;
+
               width: 47mm !important;
-              height: 5mm !important;
+              height: 4mm !important;
+
               font-size: 9px !important;
               font-weight: 900 !important;
-              line-height: 5mm !important;
+              line-height: 4mm !important;
+
               margin: 0 !important;
               padding: 0 !important;
-              overflow: visible !important;
+
+              overflow: hidden !important;
               white-space: nowrap !important;
               text-align: center !important;
             }
 
 
-            /* ======================================
-               NOMBRE
-            ====================================== */
-
             .producto {
               display: block !important;
               visibility: visible !important;
+              position: absolute !important;
+
+              left: 1.5mm !important;
+              top: 4.5mm !important;
+
               width: 47mm !important;
+              height: 3mm !important;
 
               font-size: 10px !important;
               font-weight: 700 !important;
+              line-height: 3mm !important;
 
-              line-height: 10px !important;
-
-              height: 10px !important;
-
-              margin: 1mm 0 0 0 !important;
+              margin: 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
-
               overflow: hidden !important;
-
               text-overflow: ellipsis !important;
+              text-align: center !important;
             }
 
-
-            /* ======================================
-               TALLE / COLOR
-            ====================================== */
 
             .detalle {
               display: block !important;
               visibility: visible !important;
+              position: absolute !important;
+
+              left: 1.5mm !important;
+              top: 7.5mm !important;
+
               width: 47mm !important;
+              height: 3mm !important;
 
               font-size: 9px !important;
               font-weight: 600 !important;
+              line-height: 3mm !important;
 
-              line-height: 9px !important;
-
-              height: 9px !important;
-
-              margin: 0.8mm 0 0 0 !important;
+              margin: 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
-
               overflow: hidden !important;
+              text-align: center !important;
             }
 
 
-            /* ======================================
-               PRECIO
-            ====================================== */
-
             .precio {
-              width: 100% !important;
+              display: block !important;
+              visibility: visible !important;
+              position: absolute !important;
+
+              left: 1.5mm !important;
+              top: 10.5mm !important;
+
+              width: 47mm !important;
+              height: 4mm !important;
 
               font-size: 14px !important;
               font-weight: 900 !important;
+              line-height: 4mm !important;
 
-              line-height: 14px !important;
-
-              height: 14px !important;
-
-              margin: 1.5mm 0 4mm 0 !important;
+              margin: 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
+              text-align: center !important;
             }
 
 
