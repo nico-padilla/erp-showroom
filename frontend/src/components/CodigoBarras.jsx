@@ -230,7 +230,7 @@ export default function CodigoBarras({
   height: 24mm !important;
 
   left: 1.5mm !important;
-  top: 0.5mm !important;
+  top: 1mm !important;
 
   transform: none !important;
   transform-origin: center center !important;
@@ -379,7 +379,7 @@ export default function CodigoBarras({
               position: absolute !important;
 
               left: 1.5mm !important;
-              top: 0.5mm !important;
+              top: 1mm !important;
 
               width: 47mm !important;
               height: 4mm !important;
@@ -403,7 +403,7 @@ export default function CodigoBarras({
               position: absolute !important;
 
               left: 1.5mm !important;
-              top: 4.5mm !important;
+              top: 5.5mm !important;
 
               width: 47mm !important;
               height: 3mm !important;
@@ -428,7 +428,7 @@ export default function CodigoBarras({
               position: absolute !important;
 
               left: 1.5mm !important;
-              top: 7.5mm !important;
+              top: 10mm !important;
 
               width: 47mm !important;
               height: 3mm !important;
@@ -452,7 +452,7 @@ export default function CodigoBarras({
               position: absolute !important;
 
               left: 1.5mm !important;
-              top: 10.5mm !important;
+              top: 14mm !important;
 
               width: 47mm !important;
               height: 4mm !important;
