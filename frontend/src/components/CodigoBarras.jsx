@@ -380,10 +380,10 @@ export default function CodigoBarras({
               left: 1.5mm !important;
               top: 1mm !important;
               width: 47mm !important;
-              height: 4mm !important;
+              height: 5mm !important;
               font-size: 9px !important;
               font-weight: 900 !important;
-              line-height: 4mm !important;
+              line-height: 5mm !important;
               margin: 0 !important;
               padding: 0 !important;
               overflow: visible !important;
@@ -408,7 +408,7 @@ export default function CodigoBarras({
 
               height: 10px !important;
 
-              margin: 0.2mm 0 0 0 !important;
+              margin: 1mm 0 0 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -435,7 +435,7 @@ export default function CodigoBarras({
 
               height: 9px !important;
 
-              margin: 0.1mm 0 0 0 !important;
+              margin: 0.8mm 0 0 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -458,7 +458,7 @@ export default function CodigoBarras({
 
               height: 14px !important;
 
-              margin: 1mm 0 2mm 0 !important;
+              margin: 1.5mm 0 4mm 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
