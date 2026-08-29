@@ -375,9 +375,9 @@ export default function CodigoBarras({
               font-size: 13px !important;
               font-weight: 900 !important;
 
-              line-height: 13px !important;
+              line-height: 10px !important;
 
-              height: 13px !important;
+              height: 10px !important;
 
               margin: 0 !important;
               padding: 0 !important;
@@ -398,9 +398,9 @@ export default function CodigoBarras({
               font-size: 12px !important;
               font-weight: 700 !important;
 
-              line-height: 12px !important;
+              line-height: 10px !important;
 
-              height: 12px !important;
+              height: 10px !important;
 
               margin: 0.2mm 0 0 0 !important;
               padding: 0 !important;
@@ -423,9 +423,9 @@ export default function CodigoBarras({
               font-size: 10px !important;
               font-weight: 600 !important;
 
-              line-height: 10px !important;
+              line-height: 9px !important;
 
-              height: 10px !important;
+              height: 9px !important;
 
               margin: 0.1mm 0 0 0 !important;
               padding: 0 !important;
