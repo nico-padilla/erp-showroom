@@ -181,7 +181,7 @@ export default function CodigoBarras({
 
               flex-direction: column !important;
 
-              justify-content: flex-start !important;
+              justify-content: center !important;
               align-items: center !important;
 
               width: 50mm !important;
@@ -237,12 +237,12 @@ export default function CodigoBarras({
   display: flex !important;
   flex-direction: column !important;
 
-  justify-content: flex-start !important;
+  justify-content: center !important;
   align-items: center !important;
 
   box-sizing: border-box !important;
 
-  padding: 1mm !important;
+  padding: 0.5mm 1mm !important;
 
   overflow: visible !important;
 }
@@ -372,12 +372,12 @@ export default function CodigoBarras({
             .marca {
               width: 100% !important;
 
-              font-size: 7px !important;
+              font-size: 15px !important;
               font-weight: 900 !important;
 
-              line-height: 7px !important;
+              line-height: 15px !important;
 
-              height: 7px !important;
+              height: 15px !important;
 
               margin: 0 !important;
               padding: 0 !important;
@@ -395,12 +395,12 @@ export default function CodigoBarras({
             .producto {
               width: 100% !important;
 
-              font-size: 7px !important;
+              font-size: 14px !important;
               font-weight: 700 !important;
 
-              line-height: 7px !important;
+              line-height: 14px !important;
 
-              height: 7px !important;
+              height: 14px !important;
 
               margin: 0.2mm 0 0 0 !important;
               padding: 0 !important;
@@ -420,12 +420,12 @@ export default function CodigoBarras({
             .detalle {
               width: 100% !important;
 
-              font-size: 6.5px !important;
+              font-size: 11px !important;
               font-weight: 600 !important;
 
-              line-height: 6.5px !important;
+              line-height: 11px !important;
 
-              height: 6.5px !important;
+              height: 11px !important;
 
               margin: 0.1mm 0 0 0 !important;
               padding: 0 !important;
@@ -443,14 +443,14 @@ export default function CodigoBarras({
             .precio {
               width: 100% !important;
 
-              font-size: 9px !important;
+              font-size: 14px !important;
               font-weight: 900 !important;
 
-              line-height: 9px !important;
+              line-height: 14px !important;
 
-              height: 9px !important;
+              height: 14px !important;
 
-              margin: 0.1mm 0 0 0 !important;
+              margin: 1mm 0 5mm 0 !important;
               padding: 0 !important;
 
               white-space: nowrap !important;
@@ -465,15 +465,15 @@ export default function CodigoBarras({
               display: block !important;
               transform: none !important;
 
-              width: 43mm !important;
+              width: 46mm !important;
 
-              height: 10mm !important;
+              height: 12mm !important;
 
-              min-width: 43mm !important;
-              max-width: 43mm !important;
+              min-width: 46mm !important;
+              max-width: 46mm !important;
 
-              min-height: 10mm !important;
-              max-height: 10mm !important;
+              min-height: 12mm !important;
+              max-height: 12mm !important;
 
               margin: 0.1mm auto 0 !important;
 
