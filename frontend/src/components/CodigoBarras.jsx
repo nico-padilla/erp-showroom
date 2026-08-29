@@ -372,12 +372,12 @@ export default function CodigoBarras({
             .marca {
               width: 100% !important;
 
-              font-size: 15px !important;
+              font-size: 13px !important;
               font-weight: 900 !important;
 
-              line-height: 15px !important;
+              line-height: 13px !important;
 
-              height: 15px !important;
+              height: 13px !important;
 
               margin: 0 !important;
               padding: 0 !important;
@@ -395,12 +395,12 @@ export default function CodigoBarras({
             .producto {
               width: 100% !important;
 
-              font-size: 14px !important;
+              font-size: 12px !important;
               font-weight: 700 !important;
 
-              line-height: 14px !important;
+              line-height: 12px !important;
 
-              height: 14px !important;
+              height: 12px !important;
 
               margin: 0.2mm 0 0 0 !important;
               padding: 0 !important;
@@ -420,12 +420,12 @@ export default function CodigoBarras({
             .detalle {
               width: 100% !important;
 
-              font-size: 11px !important;
+              font-size: 10px !important;
               font-weight: 600 !important;
 
-              line-height: 11px !important;
+              line-height: 10px !important;
 
-              height: 11px !important;
+              height: 10px !important;
 
               margin: 0.1mm 0 0 0 !important;
               padding: 0 !important;
