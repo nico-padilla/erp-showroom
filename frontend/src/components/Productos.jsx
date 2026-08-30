@@ -3,7 +3,49 @@ import { useEffect, useState } from "react"
 import ProductoForm from "./ProductoForm"
 import CodigoBarras from "./CodigoBarras"
 
+function EtiquetaMasiva({ producto }) {
+  const codigo =
+    producto?.codigo_barras ||
+    producto?.codigo ||
+    ""
 
+  return (
+    <div className="etiqueta-masiva">
+      <div className="marca-masiva">
+        MARÍA PAZ BY CHARA
+      </div>
+
+      <div className="producto-masiva">
+        {producto?.nombre || "Producto"}
+      </div>
+
+      {(producto?.talle || producto?.color) && (
+        <div className="detalle-masiva">
+          {producto?.talle && `T: ${producto.talle}`}
+          {producto?.talle && producto?.color && "  "}
+          {producto?.color && producto.color}
+        </div>
+      )}
+
+      <div className="precio-masiva">
+        $
+        {Number(
+          producto?.precio_venta || 0
+        ).toLocaleString("es-AR")}
+      </div>
+
+      <div className="codigo-barras-masiva">
+        <svg
+          data-barcode={codigo}
+        />
+      </div>
+
+      <div className="numero-codigo-masiva">
+        {codigo}
+      </div>
+    </div>
+  )
+}
 
 function Productos() {
   const [productos, setProductos] = useState([])
@@ -12,17 +54,67 @@ function Productos() {
   const [mostrarCodigo, setMostrarCodigo] = useState(null)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState("")
+  const [seleccionados, setSeleccionados] = useState([])
+  const [imprimiendoMasivo, setImprimiendoMasivo] = useState(false)
 
   useEffect(() => {
     cargarProductos()
   }, [])
+
+  useEffect(() => {
+    if (!imprimiendoMasivo) return
+
+    const timer = setTimeout(() => {
+      const svgs = document.querySelectorAll(
+        ".codigo-barras-masiva svg"
+      )
+
+      svgs.forEach((svg) => {
+        const codigo = svg.dataset.barcode
+
+        if (!codigo) return
+
+        try {
+          const JsBarcode =
+            window.JsBarcode
+
+          if (JsBarcode) {
+            JsBarcode(svg, String(codigo), {
+              format: "CODE128",
+              width: 1.4,
+              height: 38,
+              displayValue: false,
+              margin: 0
+            })
+          }
+        } catch (error) {
+          console.error(
+            "Error generando código masivo:",
+            error
+          )
+        }
+      })
+
+      setTimeout(() => {
+        window.print()
+
+        setTimeout(() => {
+          setImprimiendoMasivo(false)
+        }, 500)
+      }, 150)
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [imprimiendoMasivo])
 
   async function cargarProductos() {
     try {
       setCargando(true)
       setError("")
 
-      const respuesta = await fetch(`${API}/productos/`)
+      const respuesta = await fetch(
+        `${API}/productos/`
+      )
 
       if (!respuesta.ok) {
         throw new Error(
@@ -76,7 +168,6 @@ function Productos() {
       }
 
       await respuesta.json()
-
       await cargarProductos()
 
     } catch (error) {
@@ -115,6 +206,10 @@ function Productos() {
           "No se pudo eliminar"
         )
       }
+
+      setSeleccionados((actuales) =>
+        actuales.filter((item) => item !== id)
+      )
 
       await cargarProductos()
 
@@ -171,6 +266,52 @@ function Productos() {
     }
   }
 
+  function toggleSeleccion(id) {
+    setSeleccionados((actuales) =>
+      actuales.includes(id)
+        ? actuales.filter(
+            (item) => item !== id
+          )
+        : [...actuales, id]
+    )
+  }
+
+  function seleccionarTodos() {
+    const idsConStock =
+      productosFiltrados
+        .filter(
+          (producto) =>
+            Number(producto.stock || 0) > 0
+        )
+        .map((producto) => producto.id)
+
+    setSeleccionados(idsConStock)
+  }
+
+  function limpiarSeleccion() {
+    setSeleccionados([])
+  }
+
+  function imprimirSeleccionadas() {
+    const productosParaImprimir =
+      productos.filter(
+        (producto) =>
+          seleccionados.includes(producto.id) &&
+          Number(producto.stock || 0) > 0
+      )
+
+    if (
+      productosParaImprimir.length === 0
+    ) {
+      alert(
+        "Seleccioná al menos un producto con stock."
+      )
+      return
+    }
+
+    setImprimiendoMasivo(true)
+  }
+
   const productosFiltrados =
     productos.filter((producto) => {
       const texto =
@@ -199,254 +340,633 @@ function Productos() {
       )
     })
 
+  const productosParaImprimir =
+    productos.filter(
+      (producto) =>
+        seleccionados.includes(producto.id) &&
+        Number(producto.stock || 0) > 0
+    )
+
+  const cantidadEtiquetasMasivas =
+    productosParaImprimir.reduce(
+      (total, producto) =>
+        total + Number(producto.stock || 0),
+      0
+    )
+
   return (
-    <div className="p-6">
+    <>
+      <style>
+        {`
+          .zona-impresion-masiva {
+            display: none;
+          }
 
-      <div className="flex justify-between items-center mb-6">
+          @page {
+            size: 50mm 25mm;
+            margin: 0;
+          }
 
-        <div>
-          <h1 className="text-3xl font-bold">
-            Productos
-          </h1>
+          @media print {
 
-          <p className="text-gray-500">
-            Gestión de productos e inventario
-          </p>
-        </div>
-
-        <button
-          onClick={cargarProductos}
-          className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
-        >
-          🔄 Actualizar
-        </button>
-
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-[1.25fr_0.75fr] gap-6 mb-6">
-        <div>
-          <ProductoForm onGuardar={agregarProducto} />
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-5 h-fit">
-          <h2 className="text-xl font-bold mb-4">Resumen</h2>
-
-          <div className="space-y-3">
-            <div className="flex justify-between border-b pb-2">
-              <span className="text-gray-600">Total</span>
-              <strong>{productos.length}</strong>
-            </div>
-
-            <div className="flex justify-between border-b pb-2">
-              <span className="text-gray-600">Stock bajo</span>
-              <strong className="text-red-600">
-                {productos.filter((producto) => Number(producto.stock) <= Number(producto.stock_minimo || 0)).length}
-              </strong>
-            </div>
-
-            <div className="flex justify-between border-b pb-2">
-              <span className="text-gray-600">Con stock</span>
-              <strong className="text-green-600">
-                {productos.filter((producto) => Number(producto.stock) > Number(producto.stock_minimo || 0)).length}
-              </strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-5 mt-6">
-
-        <div className="mb-4">
-
-          <input
-            type="text"
-            placeholder="Buscar por código, nombre, categoría o marca..."
-            value={busqueda}
-            onChange={(e) =>
-              setBusqueda(e.target.value)
+            html {
+              width: 50mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
             }
-            className="w-full border rounded-lg px-4 py-3"
-          />
+
+            body {
+              width: 50mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              overflow: hidden !important;
+            }
+
+            body > * {
+              visibility: hidden !important;
+            }
+
+            .zona-impresion-masiva {
+              display: block !important;
+              visibility: visible !important;
+
+              position: absolute !important;
+              left: 0 !important;
+              top: 0 !important;
+
+              width: 50mm !important;
+
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+
+            .zona-impresion-masiva,
+            .zona-impresion-masiva * {
+              visibility: visible !important;
+            }
+
+            .etiqueta-masiva {
+              display: block !important;
+
+              position: relative !important;
+
+              width: 50mm !important;
+              height: 25mm !important;
+
+              min-width: 50mm !important;
+              max-width: 50mm !important;
+
+              min-height: 25mm !important;
+              max-height: 25mm !important;
+
+              box-sizing: border-box !important;
+
+              margin: 0 !important;
+              padding: 0 !important;
+
+              overflow: hidden !important;
+
+              page-break-after: always !important;
+              break-after: page !important;
+
+              background: white !important;
+
+              font-family:
+                Arial,
+                Helvetica,
+                sans-serif !important;
+
+              text-align: center !important;
+            }
+
+            .etiqueta-masiva:last-child {
+              page-break-after: auto !important;
+              break-after: auto !important;
+            }
+
+            .marca-masiva {
+              display: block !important;
+
+              position: absolute !important;
+
+              left: 1.5mm !important;
+              top: 1mm !important;
+
+              width: 47mm !important;
+              height: 4mm !important;
+
+              font-size: 9px !important;
+              font-weight: 900 !important;
+              line-height: 4mm !important;
+
+              white-space: nowrap !important;
+              overflow: hidden !important;
+
+              text-align: center !important;
+            }
+
+            .producto-masiva {
+              display: block !important;
+
+              position: absolute !important;
+
+              left: 1.5mm !important;
+              top: 5.5mm !important;
+
+              width: 47mm !important;
+              height: 3mm !important;
+
+              font-size: 10px !important;
+              font-weight: 700 !important;
+              line-height: 3mm !important;
+
+              white-space: nowrap !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+
+              text-align: center !important;
+            }
+
+            .detalle-masiva {
+              display: block !important;
+
+              position: absolute !important;
+
+              left: 1.5mm !important;
+              top: 10mm !important;
+
+              width: 47mm !important;
+              height: 3mm !important;
+
+              font-size: 9px !important;
+              font-weight: 600 !important;
+              line-height: 3mm !important;
+
+              white-space: nowrap !important;
+              overflow: hidden !important;
+
+              text-align: center !important;
+            }
+
+            .precio-masiva {
+              display: block !important;
+
+              position: absolute !important;
+
+              left: 1.5mm !important;
+              top: 15mm !important;
+
+              width: 47mm !important;
+              height: 4mm !important;
+
+              font-size: 14px !important;
+              font-weight: 900 !important;
+              line-height: 4mm !important;
+
+              white-space: nowrap !important;
+
+              text-align: center !important;
+            }
+
+            .codigo-barras-masiva {
+              position: absolute !important;
+
+              left: 3.5mm !important;
+              top: 20mm !important;
+
+              width: 43mm !important;
+              height: 4mm !important;
+
+              overflow: hidden !important;
+            }
+
+            .codigo-barras-masiva svg {
+              display: block !important;
+
+              width: 43mm !important;
+              height: 4mm !important;
+
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+
+            .numero-codigo-masiva {
+              display: block !important;
+
+              position: absolute !important;
+
+              left: 0 !important;
+              top: 24mm !important;
+
+              width: 50mm !important;
+              height: 1mm !important;
+
+              font-size: 5px !important;
+              font-weight: 700 !important;
+              line-height: 1mm !important;
+
+              text-align: center !important;
+            }
+
+            .no-imprimir {
+              display: none !important;
+              visibility: hidden !important;
+            }
+          }
+        `}
+      </style>
+
+      <div className="p-6 no-imprimir">
+
+        <div className="flex justify-between items-center mb-6">
+
+          <div>
+            <h1 className="text-3xl font-bold">
+              Productos
+            </h1>
+
+            <p className="text-gray-500">
+              Gestión de productos e inventario
+            </p>
+          </div>
+
+          <button
+            onClick={cargarProductos}
+            className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
+          >
+            🔄 Actualizar
+          </button>
 
         </div>
 
-        {cargando && (
-          <div className="text-center py-6">
-            Cargando productos...
+        <div className="grid grid-cols-1 xl:grid-cols-[1.25fr_0.75fr] gap-6 mb-6">
+
+          <div>
+            <ProductoForm
+              onGuardar={agregarProducto}
+            />
           </div>
-        )}
 
-        {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
-            ❌ {error}
+          <div className="bg-white rounded-lg shadow p-5 h-fit">
 
-            <div className="text-sm mt-2">
-              API: {API}
+            <h2 className="text-xl font-bold mb-4">
+              Resumen
+            </h2>
+
+            <div className="space-y-3">
+
+              <div className="flex justify-between border-b pb-2">
+                <span className="text-gray-600">
+                  Total
+                </span>
+
+                <strong>
+                  {productos.length}
+                </strong>
+              </div>
+
+              <div className="flex justify-between border-b pb-2">
+                <span className="text-gray-600">
+                  Stock bajo
+                </span>
+
+                <strong className="text-red-600">
+                  {
+                    productos.filter(
+                      (producto) =>
+                        Number(producto.stock) <=
+                        Number(
+                          producto.stock_minimo || 0
+                        )
+                    ).length
+                  }
+                </strong>
+              </div>
+
+              <div className="flex justify-between border-b pb-2">
+                <span className="text-gray-600">
+                  Con stock
+                </span>
+
+                <strong className="text-green-600">
+                  {
+                    productos.filter(
+                      (producto) =>
+                        Number(producto.stock) >
+                        Number(
+                          producto.stock_minimo || 0
+                        )
+                    ).length
+                  }
+                </strong>
+              </div>
+
             </div>
-          </div>
-        )}
 
-        {!cargando &&
-          !error &&
-          productosFiltrados.length === 0 && (
-            <div className="text-center text-gray-500 py-8">
-              No hay productos para mostrar.
+          </div>
+
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-5 mt-6">
+
+          <div className="mb-4">
+
+            <input
+              type="text"
+              placeholder="Buscar por código, nombre, categoría o marca..."
+              value={busqueda}
+              onChange={(e) =>
+                setBusqueda(e.target.value)
+              }
+              className="w-full border rounded-lg px-4 py-3"
+            />
+
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+
+            <button
+              onClick={seleccionarTodos}
+              className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
+            >
+              ☑️ Seleccionar todos
+            </button>
+
+            <button
+              onClick={limpiarSeleccion}
+              className="border px-4 py-2 rounded hover:bg-gray-100"
+            >
+              Limpiar selección
+            </button>
+
+            <button
+              onClick={imprimirSeleccionadas}
+              disabled={
+                seleccionados.length === 0
+              }
+              className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400"
+            >
+              🖨️ Imprimir seleccionadas (
+              {cantidadEtiquetasMasivas}
+              )
+            </button>
+
+          </div>
+
+          {seleccionados.length > 0 && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+
+              <strong>
+                {seleccionados.length}
+              </strong>{" "}
+              productos seleccionados —{" "}
+
+              <strong>
+                {cantidadEtiquetasMasivas}
+              </strong>{" "}
+              etiquetas a imprimir según stock.
+
             </div>
           )}
 
-        {!cargando &&
-          productosFiltrados.length > 0 && (
+          {cargando && (
+            <div className="text-center py-6">
+              Cargando productos...
+            </div>
+          )}
 
-          <div className="overflow-x-auto">
+          {error && (
+            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
 
-            <table className="w-full">
+              ❌ {error}
 
-              <thead>
+              <div className="text-sm mt-2">
+                API: {API}
+              </div>
 
-                <tr className="border-b">
+            </div>
+          )}
 
-                  <th className="text-left p-3">
-                    Código
-                  </th>
+          {!cargando &&
+            !error &&
+            productosFiltrados.length === 0 && (
+              <div className="text-center text-gray-500 py-8">
+                No hay productos para mostrar.
+              </div>
+            )}
 
-                  <th className="text-left p-3">
-                    Producto
-                  </th>
+          {!cargando &&
+            productosFiltrados.length > 0 && (
 
-                  <th className="text-left p-3">
-                    Categoría
-                  </th>
+              <div className="overflow-x-auto">
 
-                  <th className="text-left p-3">
-                    Talle
-                  </th>
+                <table className="w-full">
 
-                  <th className="text-left p-3">
-                    Color
-                  </th>
+                  <thead>
 
-                  <th className="text-right p-3">
-                    Precio
-                  </th>
+                    <tr className="border-b">
 
-                  <th className="text-right p-3">
-                    Stock
-                  </th>
-
-                  <th className="text-center p-3">
-                    Acciones
-                  </th>
-
-                </tr>
-
-              </thead>
-
-              <tbody>
-
-                {productosFiltrados.map(
-                  (producto) => (
-
-                    <tr
-                      key={producto.id}
-                      className="border-b hover:bg-gray-50"
-                    >
-
-                      <td className="p-3">
-                        {producto.codigo}
-                      </td>
-
-                      <td className="p-3 font-medium">
-                        {producto.nombre}
-                      </td>
-
-                      <td className="p-3">
-                        {producto.categoria}
-                      </td>
-
-                      <td className="p-3">
-                        {producto.talle}
-                      </td>
-
-                      <td className="p-3">
-                        {producto.color}
-                      </td>
-
-                      <td className="p-3 text-right">
-                        $
-                        {Number(
-                          producto.precio_venta || 0
-                        ).toLocaleString(
-                          "es-AR"
-                        )}
-                      </td>
-
-                      <td className="p-3 text-right">
-
-                        <span
-                          className={
-                            Number(producto.stock) <=
-                            Number(producto.stock_minimo)
-                              ? "text-red-600 font-bold"
-                              : "text-green-600"
+                      <th className="text-center p-3">
+                        <input
+                          type="checkbox"
+                          checked={
+                            productosFiltrados.filter(
+                              (producto) =>
+                                Number(
+                                  producto.stock || 0
+                                ) > 0
+                            ).length > 0 &&
+                            productosFiltrados
+                              .filter(
+                                (producto) =>
+                                  Number(
+                                    producto.stock || 0
+                                  ) > 0
+                              )
+                              .every(
+                                (producto) =>
+                                  seleccionados.includes(
+                                    producto.id
+                                  )
+                              )
                           }
-                        >
-                          {producto.stock}
-                        </span>
+                          onChange={(e) =>
+                            e.target.checked
+                              ? seleccionarTodos()
+                              : limpiarSeleccion()
+                          }
+                        />
+                      </th>
 
-                      </td>
+                      <th className="text-left p-3">
+                        Código
+                      </th>
 
-                      <td className="p-3">
+                      <th className="text-left p-3">
+                        Producto
+                      </th>
 
-                        <div className="flex gap-2 justify-center">
+                      <th className="text-left p-3">
+                        Categoría
+                      </th>
 
-                          <button
-                            onClick={() =>
-                              setMostrarCodigo(
-                                producto
-                              )
-                            }
-                            className="bg-blue-600 text-white px-3 py-1 rounded"
-                          >
-                            📊
-                          </button>
+                      <th className="text-left p-3">
+                        Talle
+                      </th>
 
-                          <button
-                            onClick={() =>
-                              setEditando({
-                                ...producto
-                              })
-                            }
-                            className="bg-yellow-500 text-white px-3 py-1 rounded"
-                          >
-                            ✏️
-                          </button>
+                      <th className="text-left p-3">
+                        Color
+                      </th>
 
-                          <button
-                            onClick={() =>
-                              eliminarProducto(
-                                producto.id
-                              )
-                            }
-                            className="bg-red-600 text-white px-3 py-1 rounded"
-                          >
-                            🗑️
-                          </button>
+                      <th className="text-right p-3">
+                        Precio
+                      </th>
 
-                        </div>
+                      <th className="text-right p-3">
+                        Stock
+                      </th>
 
-                      </td>
+                      <th className="text-center p-3">
+                        Acciones
+                      </th>
 
                     </tr>
 
-                  )
-                )}
+                  </thead>
 
-              </tbody>
+                  <tbody>
 
-            </table>
+                    {productosFiltrados.map(
+                      (producto) => (
 
-          </div>
-        )}
+                        <tr
+                          key={producto.id}
+                          className="border-b hover:bg-gray-50"
+                        >
+
+                          <td className="p-3 text-center">
+
+                            <input
+                              type="checkbox"
+                              checked={seleccionados.includes(
+                                producto.id
+                              )}
+                              disabled={
+                                Number(
+                                  producto.stock || 0
+                                ) <= 0
+                              }
+                              onChange={() =>
+                                toggleSeleccion(
+                                  producto.id
+                                )
+                              }
+                            />
+
+                          </td>
+
+                          <td className="p-3">
+                            {producto.codigo}
+                          </td>
+
+                          <td className="p-3 font-medium">
+                            {producto.nombre}
+                          </td>
+
+                          <td className="p-3">
+                            {producto.categoria}
+                          </td>
+
+                          <td className="p-3">
+                            {producto.talle}
+                          </td>
+
+                          <td className="p-3">
+                            {producto.color}
+                          </td>
+
+                          <td className="p-3 text-right">
+                            $
+                            {Number(
+                              producto.precio_venta || 0
+                            ).toLocaleString(
+                              "es-AR"
+                            )}
+                          </td>
+
+                          <td className="p-3 text-right">
+
+                            <span
+                              className={
+                                Number(
+                                  producto.stock
+                                ) <=
+                                Number(
+                                  producto.stock_minimo
+                                )
+                                  ? "text-red-600 font-bold"
+                                  : "text-green-600"
+                              }
+                            >
+                              {producto.stock}
+                            </span>
+
+                          </td>
+
+                          <td className="p-3">
+
+                            <div className="flex gap-2 justify-center">
+
+                              <button
+                                onClick={() =>
+                                  setMostrarCodigo(
+                                    producto
+                                  )
+                                }
+                                className="bg-blue-600 text-white px-3 py-1 rounded"
+                              >
+                                📊
+                              </button>
+
+                              <button
+                                onClick={() =>
+                                  setEditando({
+                                    ...producto
+                                  })
+                                }
+                                className="bg-yellow-500 text-white px-3 py-1 rounded"
+                              >
+                                ✏️
+                              </button>
+
+                              <button
+                                onClick={() =>
+                                  eliminarProducto(
+                                    producto.id
+                                  )
+                                }
+                                className="bg-red-600 text-white px-3 py-1 rounded"
+                              >
+                                🗑️
+                              </button>
+
+                            </div>
+
+                          </td>
+
+                        </tr>
+
+                      )
+                    )}
+
+                  </tbody>
+
+                </table>
+
+              </div>
+            )}
+
+        </div>
 
       </div>
 
@@ -469,58 +989,149 @@ function Productos() {
               Editar producto
             </h2>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-              {[
-                ["codigo", "Código"],
-                ["codigo_barras", "Código de barras"],
-                ["nombre", "Nombre"],
-                ["descripcion", "Descripción"],
-                ["categoria", "Categoría"],
-                ["marca", "Marca"],
-                ["talle", "Talle"],
-                ["color", "Color"],
-                ["precio_compra", "Precio compra"],
-                ["precio_venta", "Precio venta"],
-                ["stock", "Stock"],
-                ["stock_minimo", "Stock mínimo"]
-              ].map(
-                ([campo, etiqueta]) => (
+              <input
+                value={editando.codigo || ""}
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    codigo: e.target.value
+                  })
+                }
+                placeholder="Código"
+                className="border rounded px-3 py-2"
+              />
 
-                  <div key={campo}>
+              <input
+                value={
+                  editando.codigo_barras || ""
+                }
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    codigo_barras:
+                      e.target.value
+                  })
+                }
+                placeholder="Código de barras"
+                className="border rounded px-3 py-2"
+              />
 
-                    <label className="block text-sm font-medium mb-1">
-                      {etiqueta}
-                    </label>
+              <input
+                value={editando.nombre || ""}
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    nombre: e.target.value
+                  })
+                }
+                placeholder="Nombre"
+                className="border rounded px-3 py-2"
+              />
 
-                    <input
-                      type={
-                        [
-                          "precio_compra",
-                          "precio_venta",
-                          "stock",
-                          "stock_minimo"
-                        ].includes(campo)
-                          ? "number"
-                          : "text"
-                      }
-                      value={
-                        editando[campo] ?? ""
-                      }
-                      onChange={(e) =>
-                        setEditando({
-                          ...editando,
-                          [campo]:
-                            e.target.value
-                        })
-                      }
-                      className="w-full border rounded px-3 py-2"
-                    />
+              <input
+                value={
+                  editando.categoria || ""
+                }
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    categoria:
+                      e.target.value
+                  })
+                }
+                placeholder="Categoría"
+                className="border rounded px-3 py-2"
+              />
 
-                  </div>
+              <input
+                value={editando.talle || ""}
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    talle: e.target.value
+                  })
+                }
+                placeholder="Talle"
+                className="border rounded px-3 py-2"
+              />
 
-                )
-              )}
+              <input
+                value={editando.color || ""}
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    color: e.target.value
+                  })
+                }
+                placeholder="Color"
+                className="border rounded px-3 py-2"
+              />
+
+              <input
+                type="number"
+                value={
+                  editando.precio_compra || 0
+                }
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    precio_compra:
+                      Number(e.target.value)
+                  })
+                }
+                placeholder="Precio compra"
+                className="border rounded px-3 py-2"
+              />
+
+              <input
+                type="number"
+                value={
+                  editando.precio_venta || 0
+                }
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    precio_venta:
+                      Number(e.target.value)
+                  })
+                }
+                placeholder="Precio venta"
+                className="border rounded px-3 py-2"
+              />
+
+              <input
+                type="number"
+                value={
+                  editando.stock || 0
+                }
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    stock:
+                      Number(e.target.value)
+                  })
+                }
+                placeholder="Stock"
+                className="border rounded px-3 py-2"
+              />
+
+              <input
+                type="number"
+                value={
+                  editando.stock_minimo || 0
+                }
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    stock_minimo:
+                      Number(e.target.value)
+                  })
+                }
+                placeholder="Stock mínimo"
+                className="border rounded px-3 py-2"
+              />
 
             </div>
 
@@ -550,7 +1161,30 @@ function Productos() {
 
       )}
 
-    </div>
+      {imprimiendoMasivo && (
+        <div className="zona-impresion-masiva">
+
+          {productosParaImprimir.flatMap(
+            (producto) =>
+              Array.from(
+                {
+                  length: Number(
+                    producto.stock || 0
+                  )
+                },
+                (_, index) => (
+                  <EtiquetaMasiva
+                    key={`${producto.id}-${index}`}
+                    producto={producto}
+                  />
+                )
+              )
+          )}
+
+        </div>
+      )}
+
+    </>
   )
 }
 
