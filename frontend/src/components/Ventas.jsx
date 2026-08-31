@@ -58,7 +58,24 @@ export default function Ventas() {
     }
   }
 
-  function agregarAlCarrito(producto) {
+  function manejarEscaneo(e) {
+    const codigo = String(e.target.value || "").trim()
+
+    if (!codigo) return
+
+    const producto = productos.find(
+      p =>
+        String(p.codigo_barras || "").trim() === codigo ||
+        String(p.codigo || "").trim() === codigo
+    )
+
+    if (!producto) {
+      return
+    }
+
+    agregarAlCarrito(producto)
+  }  
+function agregarAlCarrito(producto) {
     const cantidadAgregar = Number(cantidad)
 
     if (!cantidadAgregar || cantidadAgregar < 1) {
@@ -477,10 +494,15 @@ ${filas}
         }}>
           <h2>🔎 Buscar producto</h2>
 
-          <input
-            value={busqueda}
-            onChange={e => setBusqueda(e.target.value)}
-            placeholder="Código, código de barras o nombre"
+     <input
+  value={busqueda}
+  onChange={e => setBusqueda(e.target.value)}
+  onKeyDown={e => {
+    if (e.key === "Enter") {
+      manejarEscaneo(e)
+    }
+  }}
+  placeholder="Código, código de barras o nombre"
             style={{
               width: "100%",
               padding: "12px",
