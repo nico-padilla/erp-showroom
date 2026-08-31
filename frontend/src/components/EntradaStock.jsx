@@ -51,20 +51,15 @@ export default function EntradaStock() {
             : item
         )
       }
-
-      return [
-        ...prev,
-        {
-          producto_id: producto.id,
-          codigo: producto.codigo,
-          codigo_barras: producto.codigo_barras,
-          nombre: producto.nombre,
-          stock_actual: Number(producto.stock || 0),
-          cantidad: 1
-        }
-      ]
+      return [...prev, {
+        producto_id: producto.id,
+        codigo: producto.codigo,
+        codigo_barras: producto.codigo_barras,
+        nombre: producto.nombre,
+        stock_actual: Number(producto.stock || 0),
+        cantidad: 1
+      }]
     })
-
     setError("")
   }
 
@@ -80,9 +75,7 @@ export default function EntradaStock() {
 
   function cambiarCantidad(productoId, valor) {
     const cantidad = Math.max(1, Number(valor) || 1)
-    setItems(prev => prev.map(item =>
-      item.producto_id === productoId ? { ...item, cantidad } : item
-    ))
+    setItems(prev => prev.map(item => item.producto_id === productoId ? { ...item, cantidad } : item))
   }
 
   function quitarItem(productoId) {
@@ -102,7 +95,6 @@ export default function EntradaStock() {
       setError("Primero cargá al menos un código.")
       return
     }
-
     if (!motivo.trim()) {
       setError("Ingresá el motivo del movimiento.")
       return
@@ -118,16 +110,11 @@ export default function EntradaStock() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           motivo: motivo.trim(),
-          items: items.map(item => ({
-            codigo: item.codigo,
-            cantidad: item.cantidad
-          }))
+          items: items.map(item => ({ codigo: item.codigo, cantidad: item.cantidad }))
         })
       })
-
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.detail || "No se pudo confirmar el ingreso")
-
       setMensaje(`Ingreso confirmado correctamente ✅ Se cargaron ${data.total_unidades} prendas en ${data.productos_afectados} productos.`)
       setItems([])
       await cargarProductos()
@@ -146,36 +133,26 @@ export default function EntradaStock() {
 
     const formData = new FormData()
     formData.append("archivo", archivo)
-
     setCargando(true)
     setError("")
     setMensaje("")
 
     try {
-      const res = await fetch(`${API}/stock/importar-excel`, {
-        method: "POST",
-        body: formData
-      })
+      const res = await fetch(`${API}/stock/importar-excel`, { method: "POST", body: formData })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.detail || "No se pudo leer el Excel")
 
-      if (data.errores?.length) {
-        setError(data.errores.join(" | "))
-      }
-
+      if (data.errores?.length) setError(data.errores.join(" | "))
       if (data.items?.length) {
         setItems(prev => {
           const mapa = new Map(prev.map(item => [item.producto_id, item]))
           data.items.forEach(item => {
             const existente = mapa.get(item.producto_id)
-            mapa.set(item.producto_id, {
-              ...item,
-              cantidad: (existente?.cantidad || 0) + Number(item.cantidad)
-            })
+            mapa.set(item.producto_id, { ...item, cantidad: (existente?.cantidad || 0) + Number(item.cantidad) })
           })
           return Array.from(mapa.values())
         })
-        setMensaje(`Excel leído correctamente. Revisá el resumen y confirmá el ingreso.`)
+        setMensaje("Excel leído correctamente. Revisá el resumen y confirmá el ingreso.")
       }
     } catch (e) {
       setError(e.message || "No se pudo leer el Excel")
@@ -198,23 +175,15 @@ export default function EntradaStock() {
       <div style={{ background: "#fff", padding: "20px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
         <h2>🔎 Escanear códigos</h2>
         <p style={{ color: "#666" }}>Pasá las etiquetas una atrás de otra. Si un código se repite, la cantidad se acumula automáticamente.</p>
-        <input
-          ref={scannerRef}
-          autoFocus
-          value={codigo}
-          onChange={e => setCodigo(e.target.value)}
-          onKeyDown={manejarScanner}
-          placeholder="Escaneá un código de barras..."
-          style={{ width: "100%", padding: "16px", fontSize: "18px", border: "2px solid #16a34a", borderRadius: "8px", boxSizing: "border-box" }}
-        />
+        <input ref={scannerRef} autoFocus value={codigo} onChange={e => setCodigo(e.target.value)} onKeyDown={manejarScanner} placeholder="Escaneá un código de barras..." style={{ width: "100%", padding: "16px", fontSize: "18px", border: "2px solid #16a34a", borderRadius: "8px", boxSizing: "border-box" }} />
       </div>
 
       <div style={{ background: "#fff", padding: "20px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
         <h2>📊 Importar Excel</h2>
-        <p style={{ color: "#666" }}>Formato recomendado: columnas <strong>codigo</strong> y <strong>cantidad</strong>. No modifica stock hasta confirmar.</p>
+        <p style={{ color: "#666" }}>Formato: columnas <strong>codigo</strong> y <strong>cantidad</strong>. No modifica stock hasta confirmar.</p>
         <label style={{ display: "inline-block", padding: "12px 18px", background: "#2563eb", color: "#fff", borderRadius: "7px", cursor: "pointer", fontWeight: "bold" }}>
           📂 Seleccionar Excel
-          <input type="file" accept=".xlsx,.xls" onChange={importarExcel} style={{ display: "none" }} />
+          <input type="file" accept=".xlsx,.xlsm" onChange={importarExcel} style={{ display: "none" }} />
         </label>
       </div>
 
@@ -229,46 +198,20 @@ export default function EntradaStock() {
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ background: "#f3f4f6" }}>
-                  <th style={{ padding: "10px", textAlign: "left" }}>Código</th>
-                  <th style={{ padding: "10px", textAlign: "left" }}>Producto</th>
-                  <th style={{ padding: "10px" }}>Stock actual</th>
-                  <th style={{ padding: "10px" }}>Ingreso</th>
-                  <th style={{ padding: "10px" }}>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map(item => (
-                  <tr key={item.producto_id} style={{ borderBottom: "1px solid #eee" }}>
-                    <td style={{ padding: "10px" }}>{item.codigo}</td>
-                    <td style={{ padding: "10px" }}>{item.nombre}</td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>{item.stock_actual}</td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>
-                      <input type="number" min="1" value={item.cantidad} onChange={e => cambiarCantidad(item.producto_id, e.target.value)} style={{ width: "80px", padding: "8px", textAlign: "center" }} />
-                    </td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>
-                      <button onClick={() => quitarItem(item.producto_id)} style={{ padding: "7px 10px", cursor: "pointer" }}>🗑️</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              <thead><tr style={{ background: "#f3f4f6" }}><th style={{ padding: "10px", textAlign: "left" }}>Código</th><th style={{ padding: "10px", textAlign: "left" }}>Producto</th><th style={{ padding: "10px" }}>Stock actual</th><th style={{ padding: "10px" }}>Ingreso</th><th style={{ padding: "10px" }}>Acción</th></tr></thead>
+              <tbody>{items.map(item => <tr key={item.producto_id} style={{ borderBottom: "1px solid #eee" }}>
+                <td style={{ padding: "10px" }}>{item.codigo}</td><td style={{ padding: "10px" }}>{item.nombre}</td><td style={{ padding: "10px", textAlign: "center" }}>{item.stock_actual}</td>
+                <td style={{ padding: "10px", textAlign: "center" }}><input type="number" min="1" value={item.cantidad} onChange={e => cambiarCantidad(item.producto_id, e.target.value)} style={{ width: "80px", padding: "8px", textAlign: "center" }} /></td>
+                <td style={{ padding: "10px", textAlign: "center" }}><button onClick={() => quitarItem(item.producto_id)} style={{ padding: "7px 10px", cursor: "pointer" }}>🗑️</button></td>
+              </tr>)}</tbody>
             </table>
           </div>
         )}
 
-        <div style={{ marginTop: "20px" }}>
-          <label style={{ display: "block", fontWeight: "bold", marginBottom: "6px" }}>Motivo</label>
-          <input value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ej: Ingreso proveedor Mina" style={{ width: "100%", padding: "11px", border: "1px solid #ccc", borderRadius: "7px", boxSizing: "border-box" }} />
-        </div>
-
+        <div style={{ marginTop: "20px" }}><label style={{ display: "block", fontWeight: "bold", marginBottom: "6px" }}>Motivo</label><input value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ej: Ingreso proveedor Mina" style={{ width: "100%", padding: "11px", border: "1px solid #ccc", borderRadius: "7px", boxSizing: "border-box" }} /></div>
         <div style={{ display: "flex", gap: "10px", marginTop: "20px", flexWrap: "wrap" }}>
-          <button onClick={confirmarIngreso} disabled={cargando || items.length === 0} style={{ padding: "13px 20px", border: "none", borderRadius: "7px", background: "#16a34a", color: "#fff", fontWeight: "bold", cursor: "pointer" }}>
-            {cargando ? "Procesando..." : "✅ CONFIRMAR INGRESO"}
-          </button>
-          <button onClick={limpiar} disabled={cargando} style={{ padding: "13px 20px", border: "1px solid #ccc", borderRadius: "7px", background: "#fff", cursor: "pointer" }}>
-            🧹 Limpiar
-          </button>
+          <button onClick={confirmarIngreso} disabled={cargando || items.length === 0} style={{ padding: "13px 20px", border: "none", borderRadius: "7px", background: "#16a34a", color: "#fff", fontWeight: "bold", cursor: "pointer" }}>{cargando ? "Procesando..." : "✅ CONFIRMAR INGRESO"}</button>
+          <button onClick={limpiar} disabled={cargando} style={{ padding: "13px 20px", border: "1px solid #ccc", borderRadius: "7px", background: "#fff", cursor: "pointer" }}>🧹 Limpiar</button>
         </div>
       </div>
     </div>
