@@ -53,6 +53,7 @@ function Productos() {
   const [busqueda, setBusqueda] = useState("")
   const [mostrarCodigo, setMostrarCodigo] = useState(null)
   const [cargando, setCargando] = useState(false)
+  const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState("")
   const [seleccionados, setSeleccionados] = useState([])
   const [imprimiendoMasivo, setImprimiendoMasivo] = useState(false)
@@ -224,11 +225,14 @@ function Productos() {
   }
 
   async function guardarEdicion() {
-    if (!editando) {
+    if (!editando || guardando) {
       return
     }
 
     try {
+      setGuardando(true)
+      setError("")
+
       const respuesta = await fetch(
         `${API}/productos/${editando.id}`,
         {
@@ -263,6 +267,8 @@ function Productos() {
       )
 
       alert(error.message)
+    } finally {
+      setGuardando(false)
     }
   }
 
@@ -1148,9 +1154,10 @@ function Productos() {
 
               <button
                 onClick={guardarEdicion}
+                disabled={guardando}
                 className="bg-green-600 text-white px-4 py-2 rounded"
               >
-                Guardar cambios
+                {guardando ? "Guardando..." : "Guardar cambios"}
               </button>
 
             </div>
