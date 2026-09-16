@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.database import Base, engine
+from app.database import Base, engine, normalizar_nombres_tablas
 
 # ==========================
 # RUTAS
@@ -25,6 +25,7 @@ from app.models import caja
 # ==========================
 # CREAR TABLAS
 # ==========================
+normalizar_nombres_tablas()
 Base.metadata.create_all(bind=engine)
 
 # ==========================
