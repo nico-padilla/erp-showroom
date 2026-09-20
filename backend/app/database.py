@@ -1,5 +1,6 @@
 import os
 from sqlalchemy import create_engine, inspect, text
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # ==========================================
@@ -7,6 +8,12 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 # ==========================================
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Evita caer en SQLite sin avisar cuando se despliega en Render
+if not DATABASE_URL and os.getenv("RENDER"):
+    raise RuntimeError(
+        "Falta DATABASE_URL en Render: no se puede usar SQLite en producción"
+    )
 
 if DATABASE_URL:
     # Parche crítico para Render: reemplaza el prefijo obsoleto
@@ -27,6 +34,10 @@ else:
         DATABASE_URL,
         connect_args={"check_same_thread": False}
     )
+
+# Muestra a qué base se conecta (sin contraseña) para confirmarlo en los logs
+_url = make_url(DATABASE_URL)
+print(f"[DB] Motor: {engine.dialect.name} | Host: {_url.host} | Base: {_url.database}")
 
 # ==========================================
 # BASE Y SESIONES
