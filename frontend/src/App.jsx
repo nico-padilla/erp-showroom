@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import Sidebar from "./components/Sidebar"
+import Login from "./components/Login"
 import Productos from "./components/Productos"
 import Clientes from "./components/Clientes"
 import Ventas from "./components/Ventas"
@@ -10,6 +11,7 @@ import Stock from "./components/Stock"
 import EntradaStock from "./components/EntradaStock"
 import Caja from "./components/Caja"
 import Reportes from "./components/Reportes"
+import { haySesion } from "./auth"
 
 function formatoPesos(valor) {
   return `$${Number(valor || 0).toLocaleString("es-AR")}`
@@ -121,7 +123,7 @@ function Dashboard() {
   )
 }
 
-function App() {
+function AppContenido() {
   return (
     <BrowserRouter>
       <div className="flex min-h-screen bg-crema text-tinta">
@@ -141,6 +143,16 @@ function App() {
       </div>
     </BrowserRouter>
   )
+}
+
+function App() {
+  const [sesionIniciada, setSesionIniciada] = useState(haySesion())
+
+  if (!sesionIniciada) {
+    return <Login onIngresar={() => setSesionIniciada(true)} />
+  }
+
+  return <AppContenido />
 }
 
 export default App
