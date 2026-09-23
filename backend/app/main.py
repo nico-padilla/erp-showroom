@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine, normalizar_nombres_tablas
@@ -6,6 +6,7 @@ from app.database import Base, engine, normalizar_nombres_tablas
 # ==========================
 # RUTAS
 # ==========================
+from app.routes.auth import router as auth_router, requerir_token
 from app.routes.productos import router as productos_router
 from app.routes.clientes import router as clientes_router
 from app.routes.ventas import router as ventas_router
@@ -42,6 +43,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
         "http://localhost:5175",
         "http://127.0.0.1:5175",
         "http://localhost:5177",
@@ -58,11 +61,15 @@ app.add_middleware(
 # ==========================
 # RUTAS
 # ==========================
-app.include_router(productos_router)
-app.include_router(clientes_router)
-app.include_router(ventas_router)
-app.include_router(stock_router)
-app.include_router(caja_router)
+app.include_router(auth_router)
+
+_protegida = [Depends(requerir_token)]
+
+app.include_router(productos_router, dependencies=_protegida)
+app.include_router(clientes_router, dependencies=_protegida)
+app.include_router(ventas_router, dependencies=_protegida)
+app.include_router(stock_router, dependencies=_protegida)
+app.include_router(caja_router, dependencies=_protegida)
 
 # ==========================
 # INICIO
