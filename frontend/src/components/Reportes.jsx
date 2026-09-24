@@ -1,4 +1,4 @@
-import { API } from "../config"
+import { apiFetch } from "../api"
 import { useEffect, useMemo, useState } from "react"
 
 
@@ -22,9 +22,9 @@ export default function Reportes() {
         productosRes,
         cajaRes,
       ] = await Promise.all([
-        fetch(`${API}/ventas/`),
-        fetch(`${API}/productos/`),
-        fetch(`${API}/caja/`),
+        apiFetch("/ventas/"),
+        apiFetch("/productos/"),
+        apiFetch("/caja/"),
       ])
 
       const ventasTexto = await ventasRes.text()

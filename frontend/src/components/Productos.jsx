@@ -1,4 +1,4 @@
-import { API } from "../config"
+import { apiFetch } from "../api"
 import { useEffect, useState } from "react"
 import ProductoForm from "./ProductoForm"
 import CodigoBarras from "./CodigoBarras"
@@ -113,8 +113,8 @@ function Productos() {
       setCargando(true)
       setError("")
 
-      const respuesta = await fetch(
-        `${API}/productos/`
+      const respuesta = await apiFetch(
+        "/productos/"
       )
 
       if (!respuesta.ok) {
@@ -147,8 +147,8 @@ function Productos() {
 
   async function agregarProducto(nuevo) {
     try {
-      const respuesta = await fetch(
-        `${API}/productos/`,
+      const respuesta = await apiFetch(
+        "/productos/",
         {
           method: "POST",
           headers: {
@@ -191,8 +191,8 @@ function Productos() {
     }
 
     try {
-      const respuesta = await fetch(
-        `${API}/productos/${id}`,
+      const respuesta = await apiFetch(
+        `/productos/${id}`,
         {
           method: "DELETE"
         }
@@ -233,8 +233,8 @@ function Productos() {
       setGuardando(true)
       setError("")
 
-      const respuesta = await fetch(
-        `${API}/productos/${editando.id}`,
+      const respuesta = await apiFetch(
+        `/productos/${editando.id}`,
         {
           method: "PUT",
           headers: {

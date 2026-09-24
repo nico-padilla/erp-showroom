@@ -1,4 +1,4 @@
-import { API } from "../config"
+import { apiFetch } from "../api"
 import { useEffect, useState } from "react"
 
 export default function Ventas() {
@@ -26,7 +26,7 @@ export default function Ventas() {
 
   async function cargarProductos() {
     try {
-      const res = await fetch(`${API}/productos/`)
+      const res = await apiFetch("/productos/")
       if (!res.ok) throw new Error("No se pudieron cargar los productos")
       const data = await res.json()
       setProductos(Array.isArray(data) ? data : [])
@@ -38,7 +38,7 @@ export default function Ventas() {
 
   async function cargarVentas() {
     try {
-      const res = await fetch(`${API}/ventas/`)
+      const res = await apiFetch("/ventas/")
       if (!res.ok) throw new Error("No se pudieron cargar las ventas")
       const data = await res.json()
       setVentas(Array.isArray(data) ? data : [])
@@ -49,7 +49,7 @@ export default function Ventas() {
 
   async function cargarClientes() {
     try {
-      const res = await fetch(`${API}/clientes/`)
+      const res = await apiFetch("/clientes/")
       if (!res.ok) throw new Error("No se pudieron cargar los clientes")
       const data = await res.json()
       setClientes(Array.isArray(data) ? data : [])
@@ -202,7 +202,7 @@ function agregarAlCarrito(producto) {
 
       console.log("VENTA ENVIADA:", venta)
 
-      const res = await fetch(`${API}/ventas/`, {
+      const res = await apiFetch("/ventas/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(venta)

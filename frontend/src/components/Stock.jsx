@@ -1,4 +1,4 @@
-import { API } from "../config"
+import { apiFetch } from "../api"
 import { useEffect, useState } from "react"
 
 
@@ -28,7 +28,7 @@ export default function Stock() {
 
   async function cargarProductos() {
     try {
-      const res = await fetch(`${API}/productos/`)
+      const res = await apiFetch("/productos/")
 
       if (!res.ok) {
         throw new Error(
@@ -49,7 +49,7 @@ export default function Stock() {
 
   async function cargarMovimientos() {
     try {
-      const res = await fetch(`${API}/stock/`)
+      const res = await apiFetch("/stock/")
 
       if (!res.ok) {
         throw new Error(
@@ -137,8 +137,8 @@ export default function Stock() {
       setError("")
       setMensaje("")
 
-      const respuesta = await fetch(
-        `${API}/stock/${tipoMovimiento}`,
+      const respuesta = await apiFetch(
+        `/stock/${tipoMovimiento}`,
         {
           method: "POST",
           headers: {

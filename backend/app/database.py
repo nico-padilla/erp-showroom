@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import declarative_base, sessionmaker
@@ -28,7 +29,8 @@ if DATABASE_URL:
 
 else:
     # Desarrollo local (SQLite)
-    DATABASE_URL = "sqlite:///./erp_showroom.db"
+    sqlite_path = Path(__file__).resolve().with_name("erp_showroom.db")
+    DATABASE_URL = f"sqlite:///{sqlite_path}"
 
     engine = create_engine(
         DATABASE_URL,

@@ -1,4 +1,4 @@
-import { API } from "../config"
+import { apiFetch } from "../api"
 import { useEffect, useRef, useState } from "react"
 
 export default function EntradaStock() {
@@ -18,7 +18,7 @@ export default function EntradaStock() {
 
   async function cargarProductos() {
     try {
-      const res = await fetch(`${API}/productos/`)
+      const res = await apiFetch("/productos/")
       if (!res.ok) throw new Error("No se pudieron cargar los productos")
       const data = await res.json()
       setProductos(Array.isArray(data) ? data : [])
@@ -105,7 +105,7 @@ export default function EntradaStock() {
     setMensaje("")
 
     try {
-      const res = await fetch(`${API}/stock/entrada-masiva`, {
+      const res = await apiFetch("/stock/entrada-masiva", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -138,7 +138,7 @@ export default function EntradaStock() {
     setMensaje("")
 
     try {
-      const res = await fetch(`${API}/stock/importar-excel`, { method: "POST", body: formData })
+      const res = await apiFetch("/stock/importar-excel", { method: "POST", body: formData })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.detail || "No se pudo leer el Excel")
 

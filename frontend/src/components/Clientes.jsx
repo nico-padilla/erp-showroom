@@ -1,4 +1,4 @@
-import { API } from "../config"
+import { apiFetch } from "../api"
 import { useEffect, useState } from "react"
 
 
@@ -27,7 +27,7 @@ export default function Clientes() {
 
   async function cargarClientes() {
     try {
-      const respuesta = await fetch(`${API}/clientes/`)
+      const respuesta = await apiFetch("/clientes/")
 
       if (!respuesta.ok) {
         throw new Error(
@@ -61,8 +61,8 @@ export default function Clientes() {
     setMensaje("")
 
     try {
-      const respuesta = await fetch(
-        `${API}/clientes/`,
+      const respuesta = await apiFetch(
+        "/clientes/",
         {
           method: "POST",
           headers: {
@@ -127,8 +127,8 @@ export default function Clientes() {
     setMensaje("")
 
     try {
-      const respuesta = await fetch(
-        `${API}/clientes/${editando.id}`,
+      const respuesta = await apiFetch(
+        `/clientes/${editando.id}`,
         {
           method: "PUT",
           headers: {
@@ -178,8 +178,8 @@ export default function Clientes() {
     setMensaje("")
 
     try {
-      const respuesta = await fetch(
-        `${API}/clientes/${id}`,
+      const respuesta = await apiFetch(
+        `/clientes/${id}`,
         {
           method: "DELETE"
         }

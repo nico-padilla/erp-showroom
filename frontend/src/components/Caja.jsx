@@ -1,4 +1,4 @@
-import { API } from "../config"
+import { apiFetch } from "../api"
 import { useEffect, useState } from "react"
 
 
@@ -16,7 +16,7 @@ export default function Caja() {
 
   async function cargarMovimientos() {
     try {
-      const respuesta = await fetch(`${API}/caja/`)
+      const respuesta = await apiFetch("/caja/")
 
       if (!respuesta.ok) {
         throw new Error("No se pudieron cargar los movimientos")
@@ -45,7 +45,7 @@ export default function Caja() {
     setCargando(true)
 
     try {
-      const respuesta = await fetch(`${API}/caja/`, {
+      const respuesta = await apiFetch("/caja/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
