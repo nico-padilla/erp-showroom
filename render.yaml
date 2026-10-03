@@ -7,7 +7,9 @@ services:
     envVars:
       - key: DATABASE_URL
         sync: false
-      - key: SECRET_KEY
+      - key: PIN_ERP
+        sync: false
+      - key: SECRET_KEY_ERP
         generateValue: true
 
   - type: static

@@ -750,6 +750,14 @@ function Productos() {
                 API: {API}
               </div>
 
+              <button
+                type="button"
+                onClick={cargarProductos}
+                className="mt-3 font-semibold underline"
+              >
+                Reintentar
+              </button>
+
             </div>
           )}
 

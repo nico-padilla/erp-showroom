@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.producto import Producto
 from app.schemas.producto import ProductoCreate, ProductoRespuesta
+from app.schemas.producto_importacion import ProductoDatosImportacion
+from app.routes.auth import requerir_token
 
 router = APIRouter(
     prefix="/productos",
@@ -42,6 +44,44 @@ def editar_producto(
 
     for campo, valor in datos.items():
         setattr(producto_db, campo, valor)
+
+    db.commit()
+    db.refresh(producto_db)
+
+    return producto_db
+
+
+@router.patch(
+    "/{producto_id}/datos-importacion",
+    response_model=ProductoRespuesta,
+    dependencies=[Depends(requerir_token)]
+)
+def actualizar_datos_importacion(
+    producto_id: int,
+    datos: ProductoDatosImportacion,
+    db: Session = Depends(get_db)
+):
+    producto_db = (
+        db.query(Producto)
+        .filter(Producto.id == producto_id)
+        .first()
+    )
+
+    if not producto_db:
+        raise HTTPException(
+            status_code=404,
+            detail="Producto no encontrado"
+        )
+
+    # SOLO actualiza datos descriptivos y precios.
+    # NO modifica stock ni stock_minimo.
+    producto_db.nombre = datos.nombre
+    producto_db.categoria = datos.categoria
+    producto_db.marca = datos.marca
+    producto_db.talle = datos.talle
+    producto_db.color = datos.color
+    producto_db.precio_compra = datos.precio_compra
+    producto_db.precio_venta = datos.precio_venta
 
     db.commit()
     db.refresh(producto_db)

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { API } from "../config"
 import { guardarToken } from "../auth"
+import { fetchConTimeout } from "../api"
 
 export default function Login({ onIngresar }) {
   const [pin, setPin] = useState("")
@@ -13,7 +14,7 @@ export default function Login({ onIngresar }) {
     setCargando(true)
 
     try {
-      const res = await fetch(`${API}/auth/login`, {
+      const res = await fetchConTimeout(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pin })
