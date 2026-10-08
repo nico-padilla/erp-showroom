@@ -88,6 +88,44 @@ def actualizar_datos_importacion(
 
     return producto_db
 
+@router.patch(
+    "/{producto_id}/descripcion",
+    response_model=ProductoRespuesta,
+    dependencies=[Depends(requerir_token)]
+)
+def actualizar_descripcion_producto(
+    producto_id: int,
+    datos: dict,
+    db: Session = Depends(get_db)
+):
+    producto_db = (
+        db.query(Producto)
+        .filter(Producto.id == producto_id)
+        .first()
+    )
+
+    if not producto_db:
+        raise HTTPException(
+            status_code=404,
+            detail="Producto no encontrado"
+        )
+
+    campos_permitidos = {
+        "nombre",
+        "categoria",
+        "marca",
+        "talle",
+        "color",
+    }
+
+    for campo in campos_permitidos:
+        if campo in datos:
+            setattr(producto_db, campo, datos[campo])
+
+    db.commit()
+    db.refresh(producto_db)
+
+    return producto_db
 
 @router.delete("/{producto_id}")
 def eliminar_producto(
